@@ -60,7 +60,7 @@ function App() {
       {/* Barra de Navegación */}
       <Navbar bg="light" expand="lg" fixed="top" className="custom-navbar">
         <Container>
-          <Navbar.Brand href="#" className="navbar-logo">
+          <Navbar.Brand href="#" className="navbar-logo illuminated-effect">
             {/* Mostrar el logo de la barra de navegación */}
             <img src={logo} alt="ARAMOTH LEGENDS Logo" />
           </Navbar.Brand>
@@ -82,12 +82,12 @@ function App() {
           <Col>
             <div className="hero-content">
               {/* Mostrar el icono en la sección hero */}
-              <img src={icono} alt="ARAMOTH LEGENDS" className="hero-logo" />
+              <img src={icono} alt="ARAMOTH LEGENDS" className="hero-logo illuminated-effect" />
 
               <Button
                 variant="light"
                 className="mt-4 play-button"
-                onClick={connectWallet} // Siempre conecta a Phantom
+                onClick={connectWallet}
                 disabled={loading}
               >
                 {loading ? 'Conectando...' : 'Play Game'}
