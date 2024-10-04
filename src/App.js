@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Button, Navbar, Nav } from 'react-bootstrap';
 import './App.css';
-import logo from './assets/logo.jpg'; // Logo para la barra de navegación
-import icono from './assets/icono.jpg'; // Icono para la sección hero
+import logo from './assets/LogoHorizontal.svg'; // Logo para la barra de navegación
+import icono from './assets/Logofinal.svg'; // Icono para la sección hero
 
 function App() {
   const [loading, setLoading] = useState(false);
