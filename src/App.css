@@ -1,38 +1,97 @@
-.App {
-  text-align: center;
+/* Barra de Navegación */
+.custom-navbar {
+  background-color: #fff;
+  padding: 3px;
+  z-index: 1000;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.navbar-logo img {
+  width: 150px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.navbar-items {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: space-between;
+  width: 50%; /* Aumentado para hacer el menú menos estrecho */
+  margin-right: auto;
+}
+
+.navbar-items .nav-link {
+  margin-left: 0; /* Eliminar margen adicional entre los links */
+}
+
+.nav-link {
+  font-size: 16px;
+  color: black !important;
+  margin-left: 20px;
+  text-transform: uppercase; /* Todo el texto en mayúsculas */
+}
+
+/* Sección Hero */
+.hero-section {
+  background: url('/public/img/Fondo01.png') no-repeat center center;
+  background-size: cover;
+  height: 100vh;
+  display: flex;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  align-items: flex-start; /* Cambiado de center a flex-start */
+  text-align: center;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 100px; /* Agregado para bajar el contenido */
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.hero-logo {
+  width: 350px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+/* Botón Play Game */
+.play-button {
+  padding: 12px 40px;
+  font-size: 24px;
+  background-color: #fff; /* Fondo blanco */
+  color: #000; /* Texto negro */
+  border: none;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.play-button:hover {
+  background-color: #f1f1f1; /* Efecto de hover para un color gris claro */
+  transform: scale(1.05); /* Ligera ampliación al pasar el cursor */
+}
+
+
+.navbar-nav {
+  font-weight: bold;
+}
+/* Ajustes Responsivos */
+@media (max-width: 768px) {
+  .hero-logo {
+    width: 250px;
   }
-  to {
-    transform: rotate(360deg);
+
+  .navbar-items {
+    width: 100%;
+    justify-content: space-around;
+  }
+
+  .play-button {
+    padding: 8px 30px;
+    font-size: 20px;
+  }
+
+  .navbar-logo img {
+    width: 100px;
+  }
+
+  .hero-content {
+    margin-top: 50px; /* Ajustado para pantallas más pequeñas */
   }
 }
