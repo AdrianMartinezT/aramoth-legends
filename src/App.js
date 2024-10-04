@@ -5,63 +5,38 @@ import logo from './assets/LogoHorizontal.svg'; // Logo para la barra de navegac
 import icono from './assets/Logofinal.svg'; // Icono para la sección hero
 
 function App() {
-  const [loading, setLoading] = useState(false);
-  const [walletAddress, setWalletAddress] = useState(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  // Función para verificar si Phantom está disponible en el navegador
+  // Listener para capturar el movimiento del mouse y actualizar las coordenadas
   useEffect(() => {
-    if (window.solana && window.solana.isPhantom) {
-      console.log('Phantom Wallet está disponible');
-    } else {
-      alert('Phantom Wallet no está instalada. Por favor, instala la extensión.');
-    }
+    const handleMouseMove = (e) => {
+      setMousePosition({
+        x: e.clientX,
+        y: e.clientY,
+      });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
   }, []);
 
-  // Función para desconectar Phantom antes de conectar para forzar la apertura del popup
-  const disconnectWallet = async () => {
-    const provider = window.solana;
-    if (provider && provider.disconnect) {
-      try {
-        await provider.disconnect();
-        setWalletAddress(null); // Limpiar el estado de la wallet cuando se desconecte
-      } catch (err) {
-        console.error('Error al desconectar la wallet:', err);
-      }
-    }
-  };
-
-  // Función para conectar la Phantom Wallet y forzar la apertura del popup
-  const connectWallet = async () => {
-    const provider = window.solana;
-
-    if (provider && provider.isPhantom) {
-      try {
-        setLoading(true);
-        // Desconectar siempre para forzar la apertura del popup
-        await disconnectWallet();
-
-        // Conectar a Phantom y abrir el popup
-        const { publicKey } = await provider.connect({ onlyIfTrusted: false });
-        setWalletAddress(publicKey.toString());
-      } catch (err) {
-        console.error('Error al conectar la wallet:', err);
-        alert('Error al conectar la wallet');
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      alert('Phantom Wallet no está disponible. Instalando...');
-      window.open('https://phantom.app/', '_blank');
-    }
-  };
-
   return (
-    <div className="App">
+    <div 
+      className="App"
+      style={{
+        backgroundImage: `url('/public/img/Fondo01.png'), radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0.7) 300px)`,
+        backgroundSize: 'cover',
+        backgroundBlendMode: 'multiply',
+        height: '100vh'
+      }}
+    >
       {/* Barra de Navegación */}
       <Navbar bg="light" expand="lg" fixed="top" className="custom-navbar">
         <Container>
-          <Navbar.Brand href="#" className="navbar-logo illuminated-effect">
-            {/* Mostrar el logo de la barra de navegación */}
+          <Navbar.Brand href="#" className="navbar-logo">
             <img src={logo} alt="ARAMOTH LEGENDS Logo" />
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -81,20 +56,13 @@ function App() {
         <Row className="align-items-center text-center">
           <Col>
             <div className="hero-content">
-              {/* Mostrar el icono en la sección hero */}
-              <img src={icono} alt="ARAMOTH LEGENDS" className="hero-logo illuminated-effect" />
-
+              <img src={icono} alt="ARAMOTH LEGENDS" className="hero-logo" />
               <Button
                 variant="light"
                 className="mt-4 play-button"
-                onClick={connectWallet}
-                disabled={loading}
               >
-                {loading ? 'Conectando...' : 'Play Game'}
+                Play Game
               </Button>
-
-              {/* Mostrar la wallet conectada (opcional) */}
-              {walletAddress && <p className="mt-4">Wallet conectada: {walletAddress}</p>}
             </div>
           </Col>
         </Row>
