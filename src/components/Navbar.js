@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { Container, Navbar, Nav, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';  // Importamos el componente Link
 import logo from '../assets/LogoHorizontal.svg';
-import { WalletContext } from '../context/WalletContext';  // Asegúrate de importar el contexto
+import { WalletContext } from '../context/WalletContext';  
 
 const CustomNavbar = () => {
   const { walletConnected, disconnectWallet } = useContext(WalletContext);  // Accedemos al contexto
@@ -10,7 +10,7 @@ const CustomNavbar = () => {
   return (
     <Navbar bg="light" expand="lg" fixed="top" className="custom-navbar">
       <Container>
-        <Navbar.Brand as={Link} to="/" className="navbar-logo">  {/* Usamos Link para redirigir */}
+        <Navbar.Brand as={Link} to="/" className="navbar-logo">  
           <img src={logo} alt="ARAMOTH LEGENDS Logo" />
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -26,9 +26,9 @@ const CustomNavbar = () => {
               <Nav.Link
                 as={Button}
                 variant="link"
-                className="nav-link" // Aplicamos la clase nav-link para que coincida con el estilo
+                className="nav-link" 
                 onClick={disconnectWallet}
-                style={{ color: 'black', textTransform: 'uppercase' }} // Aseguramos que se vea como los otros links
+                style={{ color: 'black', textTransform: 'uppercase' }} 
               >
                 Go Out
               </Nav.Link>
