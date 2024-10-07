@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import HeroSection from '../components/HeroSection';
-import Navbar from '../components/Navbar';
+import CustomNavbar from '../components/Navbar';
+import { WalletContext } from '../context/WalletContext';  // Importamos el contexto
 import toast, { Toaster } from 'react-hot-toast';
 
 const Home = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isAndroid, setIsAndroid] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
-  const [walletConnected, setWalletConnected] = useState(false);
-  const [publicKey, setPublicKey] = useState(null);
+
+  const { walletConnected, connectWallet, disconnectWallet } = useContext(WalletContext); // Usamos el contexto
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -35,53 +36,6 @@ const Home = () => {
     }
   }, []);
 
-  useEffect(() => {
-    const detectPhantomWallet = async () => {
-      if (window.solana && window.solana.isPhantom) {
-        try {
-          const response = await window.solana.connect({ onlyIfTrusted: true });
-          setWalletConnected(true);
-          setPublicKey(response.publicKey.toString());
-          toast.success(`Tu Wallet está conectada 👻`);
-        } catch (err) {
-          console.log('Error al conectar la wallet Phantom', err);
-        }
-      }
-    };
-
-    detectPhantomWallet();
-  }, []);
-
-  const connectWallet = () => {
-    if (isAndroid) {
-      window.location.href = "https://phantom.app/android";
-    } else if (isIOS) {
-      window.location.href = "https://phantom.app/ios";
-    } else if (window.solana && window.solana.isPhantom) {
-      window.solana.connect()
-        .then((response) => {
-          setWalletConnected(true);
-          setPublicKey(response.publicKey.toString());
-          toast.success(`Tu Wallet está conectada 👻`);
-        })
-        .catch((err) => {
-          console.error("Error al conectar la wallet Phantom", err);
-        });
-    } else {
-      alert("Phantom Wallet no está disponible. Por favor, instala la extensión o aplicación.");
-      window.open("https://phantom.app/", "_blank");
-    }
-  };
-
-  const disconnectWallet = () => {
-    if (window.solana && window.solana.disconnect) {
-      window.solana.disconnect();
-      setWalletConnected(false);
-      setPublicKey(null);
-      toast.success("Wallet desconectada 👻");
-    }
-  };
-
   return (
     <div 
       className="App"
@@ -93,11 +47,12 @@ const Home = () => {
       }}
     >
       <Toaster position="bottom-center" />
-      <Navbar />
+      <CustomNavbar />  {/* Navbar que se adapta al estado de la wallet */}
       {isAndroid && <p style={{color: 'white'}}>Estás usando un dispositivo Android</p>}
       {isIOS && <p style={{color: 'white'}}>Estás usando un dispositivo iOS</p>}
+      
       <HeroSection
-        walletConnected={walletConnected}
+        walletConnected={walletConnected}  // Usamos el estado de conexión del contexto
         connectWallet={connectWallet}
         disconnectWallet={disconnectWallet}
       />

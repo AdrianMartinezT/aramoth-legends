@@ -49,14 +49,34 @@
   box-shadow: 0 0 25px rgba(255, 255, 255, 0.7); /* Efecto de iluminación más fuerte */
 }
 
+/* Estilo para el mensaje de conectar la wallet alineado a la derecha */
+.connectWalletMessage {
+  display: flex;
+  justify-content: flex-end;  /* Alineación a la derecha */
+  margin-right: 185px;  /* Igual que los otros botones */
+  align-items: center;
+  height: 70vh; /* Ocupa toda la altura de la pantalla */
+}
+
+.connectWalletMessage button {
+  width: 300px;
+  height: 100px;
+  padding: 12px 40px;
+  font-size: 24px;
+  background-color: #fff;
+  color: #000;
+  border: none;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
 /* Responsividad para pantallas más pequeñas */
 @media (max-width: 768px) {
-  .menuButton {
+  .menuButton, .connectWalletMessage button {
     width: 200px;
     height: 80px;
   }
 
-  .menuButtons {
+  .menuButtons, .connectWalletMessage {
     margin-right: 20px;
   }
 }

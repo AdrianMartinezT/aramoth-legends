@@ -1,23 +1,24 @@
-// src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
-import MenuGame from './pages/MenuGame';  
-import './App.css';  // Asegúrate de que los estilos globales estén importados
+import MenuGame from './pages/MenuGame';
+import CustomNavbar from './components/Navbar';
+import WalletProvider from './context/WalletContext'; // Importamos el WalletProvider
+import './App.css';
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <Routes>
-          {/* Ruta para Home */}
-          <Route path="/" element={<Home />} />
-          
-          {/* Ruta para MenuGame */}
-          <Route path="/MenuGame" element={<MenuGame />} />
-        </Routes>
-      </div>
-    </Router>
+    <WalletProvider>
+      <Router>
+        <div className="App">
+          <CustomNavbar />  {/* Navbar con el botón "Salir" */}
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/MenuGame" element={<MenuGame />} />
+          </Routes>
+        </div>
+      </Router>
+    </WalletProvider>
   );
 }
 
