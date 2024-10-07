@@ -30,7 +30,7 @@ const CustomNavbar = () => {
                 onClick={disconnectWallet}
                 style={{ color: 'black', textTransform: 'uppercase' }} // Aseguramos que se vea como los otros links
               >
-                Salir
+                Go Out
               </Nav.Link>
             )}
           </Nav>
