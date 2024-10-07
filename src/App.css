@@ -12,19 +12,19 @@
 .navbar-items {
   display: flex;
   justify-content: space-between;
-  width: 50%; /* Aumentado para hacer el menú menos estrecho */
+  width: 50%;
   margin-right: auto;
 }
 
 .navbar-items .nav-link {
-  margin-left: 0; /* Eliminar margen adicional entre los links */
+  margin-left: 0;
 }
 
 .nav-link {
   font-size: 16px;
   color: black !important;
   margin-left: 20px;
-  text-transform: uppercase; /* Todo el texto en mayúsculas */
+  text-transform: uppercase;
 }
 
 .navbar-nav {
@@ -38,7 +38,7 @@
   height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* Cambiado de center a flex-start */
+  align-items: flex-start;
   text-align: center;
   color: white;
 }
@@ -47,7 +47,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 175px; /* Agregado para bajar el contenido */
+  margin-top: 175px;
 }
 
 .hero-logo {
@@ -57,25 +57,23 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Mantén este hover para que el logo tenga un efecto de iluminación al pasar el mouse */
 .hero-logo:hover {
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.6), 0 0 30px rgba(255, 255, 255, 0.4);
   transform: scale(1.05);
 }
 
-/* Botón Play Game */
 .play-button {
   padding: 12px 40px;
   font-size: 24px;
-  background-color: #fff; /* Fondo blanco */
-  color: #000; /* Texto negro */
+  background-color: #fff;
+  color: #000;
   border: none;
   transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
 .play-button:hover {
-  background-color: #f1f1f1; /* Efecto de hover para un color gris claro */
-  transform: scale(1.05); /* Ligera ampliación al pasar el cursor */
+  background-color: #f1f1f1;
+  transform: scale(1.05);
 }
 
 /* Efecto de iluminación que sigue el mouse */
@@ -107,6 +105,6 @@
   }
 
   .hero-content {
-    margin-top: 190px; /* Ajustado para pantallas más pequeñas */
+    margin-top: 190px;
   }
 }
