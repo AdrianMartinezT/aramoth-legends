@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { Container, Navbar, Nav, Button } from 'react-bootstrap';
+import { Link } from 'react-router-dom';  // Importamos el componente Link
 import logo from '../assets/LogoHorizontal.svg';
 import { WalletContext } from '../context/WalletContext';  // Asegúrate de importar el contexto
 
@@ -9,7 +10,7 @@ const CustomNavbar = () => {
   return (
     <Navbar bg="light" expand="lg" fixed="top" className="custom-navbar">
       <Container>
-        <Navbar.Brand href="#" className="navbar-logo">
+        <Navbar.Brand as={Link} to="/" className="navbar-logo">  {/* Usamos Link para redirigir */}
           <img src={logo} alt="ARAMOTH LEGENDS Logo" />
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
