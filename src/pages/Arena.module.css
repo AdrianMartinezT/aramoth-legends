@@ -1,0 +1,81 @@
+/* Fondo y diseño general de la página Arena */
+.arenaPage {
+    background: url('../assets/arena.png') no-repeat center top;  /* Fondo centrado y ajustado desde la parte superior */
+    background-size: 80% auto;  /* Asegura que el ancho ocupe el 100% y ajuste la altura proporcionalmente */
+    min-height: 100vh;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    text-align: center;
+    padding-top: 0;  /* Sin espacio superior adicional */
+    background-color: black;  /* Fondo negro para que se vea bien alrededor de la imagen */
+    overflow: hidden;
+    margin-top: 60px;
+}
+
+/* Sin fondo cuando no está conectada la wallet */
+.noBackground {
+    min-height: 100vh;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    text-align: center;
+    padding-top: 0;
+    background-color: black;  /* Mantiene el fondo negro */
+}
+
+/* Contenido cuando la wallet está conectada */
+.arenaContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-right: 185px;
+    color: white;
+}
+
+/* Botón sin fondo visible */
+.menuButton {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 300px;
+    height: 100px;
+}
+
+.menuButton img {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.menuButton img:hover {
+    transform: scale(1.1);
+    filter: drop-shadow(3px 3px 10px rgba(255, 255, 255, 0.8));
+}
+
+/* Estilo para el mensaje de conectar la wallet alineado a la derecha */
+.connectWalletMessage {
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 185px;
+    align-items: center;
+    height: 70vh;
+}
+
+/* Responsividad para pantallas más pequeñas */
+@media (max-width: 768px) {
+    .menuButton {
+      width: 200px;
+      height: 80px;
+    }
+
+    .arenaContent, .connectWalletMessage {
+      margin-right: 20px;
+    }
+
+    .arenaPage {
+      background-size: cover;
+    }
+}

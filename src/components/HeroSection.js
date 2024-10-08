@@ -10,13 +10,13 @@ const HeroSection = ({ walletConnected, connectWallet, disconnectWallet }) => {
 
   useEffect(() => {
     if (walletConnected) {
-      navigate('/MenuGame');
+      navigate('/Create');
     }
   }, [walletConnected, navigate]);
 
   return (
     <div className="hero-section">
-      <div className="overlay"></div> {/* Overlay opcional para efecto oscuro */}
+      <div className="overlay"></div> 
       <Container fluid className="content">
         <Row className="align-items-center text-center">
           <Col>

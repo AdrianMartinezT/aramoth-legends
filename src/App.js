@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import MenuGame from './pages/MenuGame';
 import Create from './pages/Create';
+import Arena from './pages/Arena';
 import CustomNavbar from './components/Navbar';
 import WalletProvider from './context/WalletContext'; // Importamos el WalletProvider
 
@@ -18,6 +19,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/MenuGame" element={<MenuGame />} />
             <Route path="/Create" element={<Create />} />
+            <Route path="/arena" element={<Arena />} />
           </Routes>
         </div>
       </Router>

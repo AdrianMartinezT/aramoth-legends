@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';  // Importa useNavigate para redirigir
 import CustomNavbar from '../components/Navbar';  // Se Importa el componente Navbar
 import { WalletContext } from '../context/WalletContext';  // Se Importa el contexto de la wallet
 import styles from './Create.module.css';  // Se Importan los estilos
@@ -7,6 +8,12 @@ import playGameButtonImage from '../assets/PlayGame.png';  // Imagen del botón 
 
 const Create = () => {
   const { walletConnected, connectWallet } = useContext(WalletContext);  // Se accede al estado de la wallet
+  const navigate = useNavigate();  // Inicializamos useNavigate para redirigir
+
+  // Función para manejar la redirección al hacer clic en "Continue"
+  const handleContinue = () => {
+    navigate('/MenuGame');  // Redirige a la página MenuGame
+  };
 
   return (
     <div className={styles.createPage}>
@@ -22,7 +29,7 @@ const Create = () => {
               placeholder=""
             />
             {/* Botón Continue */}
-            <button className={styles.menuButton}>
+            <button className={styles.menuButton} onClick={handleContinue}>
               <img src={continueButtonImage} alt="Continue" />
             </button>
           </div>
