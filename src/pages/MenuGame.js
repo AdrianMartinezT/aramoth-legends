@@ -1,21 +1,20 @@
 import React, { useContext } from 'react';
 import CustomNavbar from '../components/Navbar';  // Se Importa el componente Navbar
 import { WalletContext } from '../context/WalletContext';  // Se Importa el contexto de la wallet
-import styles from '../pages/MenuGame.module.css';  // Se Importamos los estilos
+import styles from '../pages/MenuGame.module.css';  // Se Importan los estilos
 import play1v1Button from '../assets/play-1v1-button.png';
 import campaingButton from '../assets/campaing-button.png';
 import arenaButton from '../assets/arena-button.png';
 import challengersButton from '../assets/challengers-button.png';
-import { Button } from 'react-bootstrap';  // Se Importa el componente Button
+import playGameButtonImage from '../assets/PlayGame.png';  // Imagen de Play Game
 
 const MenuGame = () => {
-  const { walletConnected, connectWallet, disconnectWallet } = useContext(WalletContext);  //Se Accede al estado de la wallet
+  const { walletConnected, connectWallet } = useContext(WalletContext);  //Se Accede al estado de la wallet
 
   return (
     <div className={styles.menuGame}>
-      <CustomNavbar />  
-      
-      {/* Si la wallet está conectada, mostramos los botones del menú */}
+      <CustomNavbar />
+
       {walletConnected ? (
         <div className={styles.heroContent}>
           <div className={styles.menuButtons}>
@@ -34,15 +33,10 @@ const MenuGame = () => {
           </div>
         </div>
       ) : (
-        // Si la wallet no está conectada, mostramos el botón para conectar la wallet
         <div className={styles.connectWalletMessage}>
-          <Button
-            variant="light"
-            className="play-button"
-            onClick={connectWallet}
-          >
-            Play Game
-          </Button>
+          <button className={styles.menuButton} onClick={connectWallet}>
+            <img src={playGameButtonImage} alt="Play Game" />
+          </button>
         </div>
       )}
     </div>

@@ -1,3 +1,4 @@
+/* Fondo y diseño general de la página MenuGame */
 .menuGame {
   background: url('../assets/menu-background.jpg') no-repeat center center;
   background-size: cover;
@@ -9,6 +10,7 @@
   padding-top: 80px;
 }
 
+/* Estilos para la sección de los botones */
 .menuButtons {
   display: flex;
   flex-direction: column;
@@ -18,35 +20,34 @@
   margin-right: 185px; /* Separación desde el borde derecho */
 }
 
+/* Botón sin fondo visible */
 .menuButton {
-  width: 300px;
-  height: 100px;
   background-color: transparent;
   border: none;
   cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Efecto de transición suave */
+  padding: 0;
+  width: 300px; /* El ancho de la imagen */
+  height: 100px; /* La altura de la imagen */
 }
 
+/* Aplicar efectos a la imagen dentro del botón */
 .menuButton img {
-  width: 100%;
-  height: 100%;
-  transition: transform 0.3s ease; /* Transición para la imagen */
+  width: 100%;  /* Imagen ocupa todo el ancho del botón */
+  height: 100%; /* Imagen ocupa todo el alto del botón */
+  transition: transform 0.3s ease, filter 0.3s ease; /* Efecto suave para transform y filter */
 }
 
-.menuButton:hover {
-  transform: scale(1.1); /* Agrandar ligeramente el botón al pasar el cursor */
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.7); /* Efecto de iluminación */
+/* Efecto de hover: agrandar la imagen y añadir un filtro drop-shadow */
+.menuButton img:hover {
+  transform: scale(1.1);  /* Agrandar ligeramente la imagen al pasar el cursor */
+  filter: drop-shadow(3px 3px 10px rgba(255, 255, 255, 0.8));  /* Filtro de sombra en la imagen */
 }
 
-.menuButton:hover img {
-  transform: scale(1.05); /* Agrandar ligeramente la imagen al pasar el cursor */
-}
-
-/* Efectos adicionales de enfoque (focus) */
-.menuButton:focus {
+/* Efecto de enfoque: más drop-shadow */
+.menuButton img:focus {
   outline: none;
-  transform: scale(1.1); /* Efecto cuando el botón está enfocado */
-  box-shadow: 0 0 25px rgba(255, 255, 255, 0.7); /* Efecto de iluminación más fuerte */
+  transform: scale(1.1); /* Agrandar cuando está enfocado */
+  filter: drop-shadow(5px 5px 15px rgba(255, 255, 255, 1)); /* Sombra más intensa */
 }
 
 /* Estilo para el mensaje de conectar la wallet alineado a la derecha */
@@ -58,20 +59,9 @@
   height: 70vh; /* Ocupa toda la altura de la pantalla */
 }
 
-.connectWalletMessage button {
-  width: 300px;
-  height: 100px;
-  padding: 12px 40px;
-  font-size: 24px;
-  background-color: #fff;
-  color: #000;
-  border: none;
-  transition: transform 0.3s ease, background-color 0.3s ease;
-}
-
 /* Responsividad para pantallas más pequeñas */
 @media (max-width: 768px) {
-  .menuButton, .connectWalletMessage button {
+  .menuButton {
     width: 200px;
     height: 80px;
   }

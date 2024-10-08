@@ -1,34 +1,39 @@
 import React, { useEffect } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom'; // Importamos useNavigate para redirigir
-import icono from '../assets/Logofinal.svg'; 
+import { useNavigate } from 'react-router-dom';
+import icono from '../assets/LogoFinal.png';
+import playGameImage from '../assets/PlayGame.png';
+import './HeroSection.css';  // Importamos el archivo CSS
 
 const HeroSection = ({ walletConnected, connectWallet, disconnectWallet }) => {
-  const navigate = useNavigate();  // Inicializamos useNavigate
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (walletConnected) {
-      navigate('/MenuGame');  // Redirigir a MenuGame si la wallet está conectada
+      navigate('/MenuGame');
     }
   }, [walletConnected, navigate]);
 
   return (
-    <Container fluid className="hero-section">
-      <Row className="align-items-center text-center">
-        <Col>
-          <div className="hero-content">
-            <img src={icono} alt="ARAMOTH LEGENDS" className="hero-logo" />
-            <Button
-              variant="light"
-              className="mt-4 play-button"
-              onClick={walletConnected ? disconnectWallet : connectWallet}
-            >
-              {walletConnected ? "Salir" : "Play Game"}
-            </Button>
-          </div>
-        </Col>
-      </Row>
-    </Container>
+    <div className="hero-section">
+      <div className="overlay"></div> {/* Overlay opcional para efecto oscuro */}
+      <Container fluid className="content">
+        <Row className="align-items-center text-center">
+          <Col>
+            <div className="hero-content">
+              <img src={icono} alt="ARAMOTH LEGENDS" className="hero-logo" />
+              <Button
+                variant="light"
+                className="play-game-button"
+                onClick={walletConnected ? disconnectWallet : connectWallet}
+              >
+                <img src={playGameImage} alt="Play Game" />
+              </Button>
+            </div>
+          </Col>
+        </Row>
+      </Container>
+    </div>
   );
 };
 

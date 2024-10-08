@@ -1,0 +1,91 @@
+/* Fondo y diseño general de la página Create */
+.createPage {
+    background: url('../assets/Fondo02.png') no-repeat center center;
+    background-size: cover;
+    height: 100vh;
+    display: flex;
+    justify-content: flex-end; /* Botones alineados a la derecha */
+    align-items: center;
+    text-align: center;
+    padding-top: 80px;
+  }
+  
+  /* Estilos para la sección de los botones */
+  .menuButtons {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end; /* Botones alineados a la derecha */
+    gap: 20px; /* Espaciado entre los botones y el textarea */
+    margin-right: 185px; /* Separación desde el borde derecho */
+  }
+  
+  /* Botón sin fondo visible */
+  .menuButton {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 300px; /* El ancho de la imagen */
+    height: 100px; /* La altura de la imagen */
+  }
+  
+  /* Aplicar efectos a la imagen dentro del botón */
+  .menuButton img {
+    width: 100%;  /* Imagen ocupa todo el ancho del botón */
+    height: 100%; /* Imagen ocupa todo el alto del botón */
+    transition: transform 0.3s ease, filter 0.3s ease; /* Efecto suave para transform y filter */
+  }
+  
+  /* Efecto de hover: agrandar la imagen y añadir un filtro drop-shadow */
+  .menuButton img:hover {
+    transform: scale(1.1);  /* Agrandar ligeramente la imagen al pasar el cursor */
+    filter: drop-shadow(3px 3px 10px rgba(255, 255, 255, 0.8));  /* Filtro de sombra en la imagen */
+  }
+  
+  /* Efecto de enfoque: más drop-shadow */
+  .menuButton img:focus {
+    outline: none;
+    transform: scale(1.1); /* Agrandar cuando está enfocado */
+    filter: drop-shadow(5px 5px 15px rgba(255, 255, 255, 1)); /* Sombra más intensa */
+  }
+  
+  /* Estilo para el mensaje de conectar la wallet alineado a la derecha */
+  .connectWalletMessage {
+    display: flex;
+    justify-content: flex-end;  /* Alineación a la derecha */
+    margin-right: 185px;  /* Igual que los otros botones */
+    align-items: center;
+    height: 70vh; /* Ocupa toda la altura de la pantalla */
+  }
+  
+  /* Estilo para el textarea */
+  .textareaInput {
+    width: 300px;
+    height: 50px;
+    border: none;
+    background-color: #e0e0e0;
+    font-size: 18px;
+    color: black;
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 10px;
+  }
+  
+  /* Responsividad para pantallas más pequeñas */
+  @media (max-width: 768px) {
+    .menuButton {
+      width: 200px;
+      height: 80px;
+    }
+  
+    .textareaInput {
+      width: 200px;
+      height: 40px;
+    }
+  
+    .menuButtons, .connectWalletMessage {
+      margin-right: 20px;
+    }
+  }
+  
