@@ -1,0 +1,80 @@
+/* src/pages/Story.module.css */
+
+
+.storyPage {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 0.8) 100%), 
+                url('../assets/Fondo04.png') no-repeat center center; /* Gradiente sobre la imagen de fondo */
+    background-size: cover;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 80px; 
+    color: white;
+    overflow: hidden;
+  }
+  
+  /* Estilo del contenedor del contenido */
+  .storyContent {
+    width: 80%;
+    max-width: 1200px;
+    background-color: rgba(0, 0, 0, 0.6);  /* Fondo oscuro semi-transparente */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);  /* Sombra en el borde del contenedor */
+    border: 1px solid rgba(255, 255, 255, 0.1);  /* Borde ligero */
+    margin-top: 4%;
+  }
+  
+  /* Título de la historia */
+  .title {
+    font-size: 36px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Contenedor de texto con scroll */
+  .scrollableText {
+    max-height: 400px;  /* Altura máxima permitida antes de que aparezca el scroll */
+    overflow-y: auto;  /* Scroll solo cuando el contenido excede la altura */
+    padding-right: 10px;  /* Espacio para que el texto no choque con el scroll */
+  }
+  
+  /* Personalización de la barra de desplazamiento */
+  .scrollableText::-webkit-scrollbar {
+    width: 12px;  /* Ancho de la barra de desplazamiento */
+  }
+  
+  .scrollableText::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.4);  /* Color de la barra */
+    border-radius: 6px;  /* Bordes redondeados */
+  }
+  
+  /* Estilo de los párrafos del texto */
+  .storyText {
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    text-align: justify;
+  }
+  
+  /* Ajuste para pantallas pequeñas */
+  @media (max-width: 768px) {
+    .storyContent {
+      width: 95%;
+    }
+  
+    .scrollableText {
+      max-height: 300px;
+    }
+  
+    .title {
+      font-size: 28px;
+    }
+  
+    .storyText {
+      font-size: 16px;
+    }
+  }
+  

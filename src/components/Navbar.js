@@ -16,10 +16,10 @@ const CustomNavbar = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto navbar-items">
-            <Nav.Link href="#main">Main</Nav.Link>
-            <Nav.Link href="#about">About</Nav.Link>
-            <Nav.Link href="#story">Story</Nav.Link>
-            <Nav.Link href="#eng">ENG</Nav.Link>
+          <Nav.Link as={Link} to="/" className="nav-link">Main</Nav.Link>
+            <Nav.Link as={Link} to="/about" className="nav-link">About</Nav.Link>
+            <Nav.Link as={Link} to="/story" className="nav-link">Story</Nav.Link> 
+            <Nav.Link as={Link} to="/eng" className="nav-link">ENG</Nav.Link>
 
             {/* Mostrar los botones "Gallery" y "Go Out" solo si la wallet está conectada */}
             {walletConnected && (

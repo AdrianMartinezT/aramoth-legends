@@ -4,7 +4,8 @@ import Home from './pages/Home';
 import MenuGame from './pages/MenuGame';
 import Create from './pages/Create';
 import Arena from './pages/Arena';
-import Gallery from './pages/Gallery';  // Importamos el componente de la página Gallery
+import Gallery from './pages/Gallery';  
+import Story from './pages/Story';  
 import CustomNavbar from './components/Navbar';
 import WalletProvider from './context/WalletContext'; // Importamos el WalletProvider
 
@@ -15,13 +16,14 @@ function App() {
     <WalletProvider>
       <Router>
         <div className="App">
-          <CustomNavbar />  {/* Navbar con el botón "Salir" */}
+          <CustomNavbar />  
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/MenuGame" element={<MenuGame />} />
             <Route path="/Create" element={<Create />} />
             <Route path="/arena" element={<Arena />} />
-            <Route path="/gallery" element={<Gallery />} />  {/* Nueva ruta para la página Gallery */}
+            <Route path="/gallery" element={<Gallery />} />  
+            <Route path="/story" element={<Story />} />  
           </Routes>
         </div>
       </Router>
