@@ -21,17 +21,28 @@ const CustomNavbar = () => {
             <Nav.Link href="#story">Story</Nav.Link>
             <Nav.Link href="#eng">ENG</Nav.Link>
 
-            {/* Botón "Salir" solo si la wallet está conectada, aplicando estilo similar a los links */}
+            {/* Mostrar los botones "Gallery" y "Go Out" solo si la wallet está conectada */}
             {walletConnected && (
-              <Nav.Link
-                as={Button}
-                variant="link"
-                className="nav-link" 
-                onClick={disconnectWallet}
-                style={{ color: 'black', textTransform: 'uppercase' }} 
-              >
-                Go Out
-              </Nav.Link>
+              <>
+                <Nav.Link
+                  as={Link}
+                  to="/gallery"
+                  className="nav-link" 
+                  style={{ color: 'black', textTransform: 'uppercase' }}
+                >
+                  Gallery
+                </Nav.Link>
+                
+                <Nav.Link
+                  as={Button}
+                  variant="link"
+                  className="nav-link" 
+                  onClick={disconnectWallet}
+                  style={{ color: 'black', textTransform: 'uppercase' }} 
+                >
+                  Go Out
+                </Nav.Link>
+              </>
             )}
           </Nav>
         </Navbar.Collapse>
