@@ -1,0 +1,129 @@
+/* Fondo general de la página de la galería */
+.galleryPage {
+    background-color: black;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5% 2%; /* Ajusta el relleno para darle espacio al contenido */
+    box-sizing: border-box;
+  }
+  
+  /* Contenedor de la galería */
+  .galleryContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px; /* Ancho máximo para pantallas grandes */
+    margin: 0 auto;
+  }
+  
+  /* Título de la galería */
+  .galleryTitle img {
+    width: 100%;
+    max-width: 300px; /* Limita el tamaño máximo del título */
+    height: auto;
+    margin-bottom: 30px;
+  }
+  
+  /* Estilo del contenedor de las cartas */
+  .cardsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Espaciado entre las filas de cartas */
+    width: 100%;
+  }
+  
+  /* Estilo de las filas de cartas */
+  .cardRow {
+    display: flex;
+    justify-content: space-evenly;
+    gap: 20px; /* Espaciado entre las cartas */
+    flex-wrap: wrap; /* Permitir que las cartas se ajusten a múltiples filas en pantallas pequeñas */
+  }
+  
+  /* Estilo de cada carta */
+  .cardImage {
+    width: 18%;  /* Ajuste basado en el porcentaje del ancho */
+    max-width: 180px;  /* Limita el tamaño máximo de las cartas en pantallas grandes */
+    height: auto;
+    transition: transform 0.6s ease, filter 0.6s ease; /* Efecto de hover suave */
+  }
+  
+  /* Efecto hover en las cartas */
+  .cardImage:hover {
+    transform: scale(1.1); /* Agranda la carta ligeramente al pasar el cursor */
+    filter: drop-shadow(3px 3px 10px rgba(255, 255, 255, 0.8)); /* Sombra al pasar el cursor */
+  }
+  
+  .cardImage:not(:hover) {
+    opacity: 0.5;  /* Disminuir la opacidad al no hacer hover para una transición suave */
+  }
+
+  /* Estilo del mensaje de conectar la wallet */
+  .connectWalletMessage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70vh;
+  }
+  
+  /* Botón sin fondo visible */
+  .menuButton {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 300px;
+    height: 100px;
+  }
+  
+  .menuButton img {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.3s ease, filter 0.3s ease;
+  }
+  
+  .menuButton img:hover {
+    transform: scale(1.1);
+    filter: drop-shadow(3px 3px 10px rgba(255, 255, 255, 0.8));
+  }
+  
+  /* Responsividad para pantallas más pequeñas */
+  @media (max-width: 768px) {
+    .cardImage {
+      width: 40%;  /* Ajustamos el tamaño de las cartas al 40% del contenedor */
+      max-width: 150px;
+    }
+  
+    .galleryTitle img {
+      width: 80%;
+      max-width: 200px; /* Limita el tamaño del título en pantallas pequeñas */
+    }
+  
+    .menuButton {
+      width: 200px;
+      height: 80px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .cardImage {
+      width: 80%; /* Las cartas ocupan casi todo el ancho del contenedor en pantallas muy pequeñas */
+      max-width: 120px;
+    }
+  
+    .galleryTitle img {
+      width: 100%;
+      max-width: 150px;
+    }
+  
+    .menuButton {
+      width: 150px;
+      height: 60px;
+    }
+  }
+  
