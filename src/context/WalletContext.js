@@ -1,5 +1,8 @@
 // src/context/WalletContext.js
 import React, { createContext, useState, useEffect } from 'react';
+import nacl from 'tweetnacl';
+import naclUtil from 'tweetnacl-util';
+import bs58 from 'bs58';
 import toast from 'react-hot-toast';
 
 export const WalletContext = createContext();
@@ -10,8 +13,11 @@ const WalletProvider = ({ children }) => {
   const [isAndroid, setIsAndroid] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [phantomInstalled, setPhantomInstalled] = useState(false);
+  const [encryptedMessage, setEncryptedMessage] = useState('');
+  const [nonce, setNonce] = useState('');
+  const [decryptedMessage, setDecryptedMessage] = useState('');
 
-  // Detectar el sistema operativo (Android o iOS)
+  // Detectar si estamos en Android o iOS
   useEffect(() => {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
 
@@ -59,16 +65,15 @@ const WalletProvider = ({ children }) => {
         })
         .catch((err) => console.error('Error al conectar la wallet Phantom', err));
     } else {
-      // Redireccionamiento a la app Phantom si no está instalada (deep link)
-      const redirectUrl = encodeURIComponent('https://aramoth-legends.vercel.app/'); // URL de regreso al navegador Phantom
+      const redirectUrl = encodeURIComponent(window.location.href);
       const deepLink = `https://phantom.app/ul/v1/connect?appUrl=${redirectUrl}`;
 
       if (isAndroid) {
-        window.location.href = deepLink; // Redirigir a la app en Android
+        window.location.href = deepLink;
       } else if (isIOS) {
-        window.location.href = deepLink; // Redirigir a la app en iOS
+        window.location.href = deepLink;
       } else {
-        window.open('https://phantom.app/', '_blank'); // Si es escritorio o no se detecta Phantom
+        window.open('https://phantom.app/', '_blank');
       }
     }
   };
@@ -79,24 +84,53 @@ const WalletProvider = ({ children }) => {
       window.solana.disconnect();
       setWalletConnected(false);
       setPublicKey(null);
-      localStorage.removeItem('walletConnected'); // Quitar el estado de conexión del localStorage
+      localStorage.removeItem('walletConnected');
       toast.success('Wallet desconectada 👻');
     }
   };
 
-  // Verificar si la app Phantom está conectada al regresar al navegador
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        checkIfWalletAlreadyConnected(); // Al volver al navegador, verificar si la wallet está conectada
-      }
-    };
+  // Encriptar el mensaje
+  const encryptMessage = (message, recipientPublicKey) => {
+    try {
+      const messageUint8 = naclUtil.decodeUTF8(message);
+      const recipientPublicKeyUint8 = bs58.decode(recipientPublicKey);
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, []);
+      if (recipientPublicKeyUint8.length !== 32) {
+        console.error(`Invalid recipient public key size: ${recipientPublicKeyUint8.length}`);
+        return;
+      }
+
+      const senderKeyPair = nacl.box.keyPair();
+      const nonce = nacl.randomBytes(nacl.box.nonceLength);
+
+      const encrypted = nacl.box(messageUint8, nonce, recipientPublicKeyUint8, senderKeyPair.secretKey);
+      const encryptedMessageBase64 = naclUtil.encodeBase64(encrypted);
+      const nonceBase64 = naclUtil.encodeBase64(nonce);
+
+      setEncryptedMessage(`Encrypted Message: ${encryptedMessageBase64}, Nonce: ${nonceBase64}`);
+      setNonce(nonceBase64);
+    } catch (error) {
+      console.error('Encryption failed:', error);
+    }
+  };
+
+  // Desencriptar el mensaje
+  const decryptMessage = (encryptedMessage, recipientKeyPair) => {
+    try {
+      const encryptedMessageUint8 = naclUtil.decodeBase64(encryptedMessage.split(':')[1].trim());
+      const nonceUint8 = naclUtil.decodeBase64(nonce);
+
+      const decrypted = nacl.box.open(encryptedMessageUint8, nonceUint8, publicKey, recipientKeyPair.secretKey);
+      if (!decrypted) {
+        throw new Error('Failed to decrypt the message.');
+      }
+
+      const decryptedText = naclUtil.encodeUTF8(decrypted);
+      setDecryptedMessage(decryptedText);
+    } catch (error) {
+      console.error('Decryption failed:', error);
+    }
+  };
 
   return (
     <WalletContext.Provider
@@ -105,9 +139,10 @@ const WalletProvider = ({ children }) => {
         publicKey,
         connectWallet,
         disconnectWallet,
-        isAndroid,
-        isIOS,
-        phantomInstalled,
+        encryptMessage,
+        decryptMessage,
+        encryptedMessage,
+        decryptedMessage
       }}
     >
       {children}

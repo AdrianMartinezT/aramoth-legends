@@ -1,4 +1,3 @@
-// src/components/Navbar.js
 import React, { useContext } from 'react';
 import { Container, Navbar, Nav, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';  // Importamos el componente Link
@@ -6,7 +5,7 @@ import logo from '../assets/LogoHorizontal.svg';
 import { WalletContext } from '../context/WalletContext';  
 
 const CustomNavbar = () => {
-  const { walletConnected, connectWallet, disconnectWallet } = useContext(WalletContext);  // Accedemos al contexto
+  const { walletConnected, disconnectWallet } = useContext(WalletContext);  // Accedemos al contexto
 
   return (
     <Navbar bg="light" expand="lg" fixed="top" className="custom-navbar">
@@ -22,7 +21,8 @@ const CustomNavbar = () => {
             <Nav.Link as={Link} to="/story" className="nav-link">Story</Nav.Link> 
             <Nav.Link as={Link} to="/eng" className="nav-link">ENG</Nav.Link>
 
-            {walletConnected ? (
+            {/* Mostrar los botones "Gallery" y "Go Out" solo si la wallet está conectada */}
+            {walletConnected && (
               <>
                 <Nav.Link
                   as={Link}
@@ -43,16 +43,6 @@ const CustomNavbar = () => {
                   Go Out
                 </Nav.Link>
               </>
-            ) : (
-              <Nav.Link
-                as={Button}
-                variant="link"
-                className="nav-link" 
-                onClick={connectWallet}  // Conecta la wallet si no está conectada
-                style={{ color: 'black', textTransform: 'uppercase' }}
-              >
-                Connect
-              </Nav.Link>
             )}
           </Nav>
         </Navbar.Collapse>

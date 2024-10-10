@@ -1,17 +1,19 @@
-// src/components/HeroSection.js
 import React, { useEffect } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import icono from '../assets/LogoFinal.png';
 import playGameImage from '../assets/PlayGame.png';
 import './HeroSection.css';  // Importamos el archivo CSS
+import { useContext } from 'react';
+import { WalletContext } from '../context/WalletContext';  
 
-const HeroSection = ({ walletConnected, connectWallet, disconnectWallet }) => {
+const HeroSection = () => {
+  const { walletConnected, connectWallet, disconnectWallet } = useContext(WalletContext);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (walletConnected) {
-      navigate('/Create');  // Redirige a la página Create si está conectada la wallet
+      navigate('/Create');
     }
   }, [walletConnected, navigate]);
 
