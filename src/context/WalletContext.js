@@ -1,4 +1,3 @@
-// src/context/WalletContext.js
 import React, { createContext, useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
@@ -22,13 +21,13 @@ const WalletProvider = ({ children }) => {
     }
   }, []);
 
-  // Detectar si Phantom está instalado y manejar eventos de conexión/desconexión
+  // Detectar si Phantom está instalado en cualquier entorno (móvil o escritorio)
   useEffect(() => {
     if (window.solana && window.solana.isPhantom) {
       setPhantomInstalled(true);
       checkIfWalletConnected();
 
-      // Detectar cambios en el estado de conexión
+      // Detectar eventos de conexión/desconexión
       window.solana.on('connect', (response) => {
         setWalletConnected(true);
         setPublicKey(response.publicKey.toString());
@@ -45,7 +44,7 @@ const WalletProvider = ({ children }) => {
     }
   }, []);
 
-  // Verificar si la wallet ya está conectada al regresar al navegador
+  // Chequear si la wallet está conectada
   const checkIfWalletConnected = async () => {
     try {
       const { solana } = window;
@@ -74,21 +73,22 @@ const WalletProvider = ({ children }) => {
     } else {
       // Detectar si estamos en Android o iOS y redirigir a la app de Phantom usando deep links
       const redirectUrl = encodeURIComponent(window.location.href);  // La URL a la que regresarás después de loguearte
-      const deepLink = `https://phantom.app/ul/v1/connect?appUrl=${redirectUrl}`;
+      const deeplinkUrl = `https://phantom.app/ul/v1/connect?appUrl=${redirectUrl}&dappEncryptionPublicKey=null&cluster=mainnet-beta`;
 
       if (isAndroid) {
         // Enlace profundo específico para Android
-        window.location.href = deepLink;
+        window.location.href = deeplinkUrl;
       } else if (isIOS) {
         // Enlace profundo específico para iOS
-        window.location.href = deepLink;
+        window.location.href = deeplinkUrl;
       } else {
+        // Para el caso de escritorio, abrir Phantom en una nueva pestaña si no está instalado
         window.open("https://phantom.app/", "_blank");
       }
     }
   };
 
-  // Función para desconectar la wallet manualmente
+  // Función para desconectar la wallet
   const disconnectWallet = () => {
     if (window.solana && window.solana.disconnect) {
       window.solana.disconnect();
@@ -98,11 +98,11 @@ const WalletProvider = ({ children }) => {
     }
   };
 
-  // Detectar cuando se regrese al navegador desde la app de Phantom
+  // Detectar si el usuario regresa al navegador desde la app de Phantom (móviles)
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
-        checkIfWalletConnected(); // Verificar si la wallet ya está conectada al regresar al navegador
+        checkIfWalletConnected(); // Verificar la conexión cuando el navegador vuelve a estar visible
       }
     };
 
