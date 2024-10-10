@@ -1,22 +1,28 @@
 import React, { createContext, useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import nacl from 'tweetnacl';
-import naclUtil from 'tweetnacl-util';
-import bs58 from 'bs58';
 
 export const WalletContext = createContext();
 
 const WalletProvider = ({ children }) => {
   const [walletConnected, setWalletConnected] = useState(false);
   const [publicKey, setPublicKey] = useState(null);
-  const [encryptedMessage, setEncryptedMessage] = useState('');
-  const [nonce, setNonce] = useState('');
-  const [decryptedMessage, setDecryptedMessage] = useState('');
+  const [isAndroid, setIsAndroid] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
 
-  // Verificar si Phantom está instalada en el navegador
+  // Detectar el sistema operativo (Android o iOS)
+  useEffect(() => {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    if (/android/i.test(userAgent)) {
+      setIsAndroid(true);
+    } else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+      setIsIOS(true);
+    }
+  }, []);
+
+  // Detectar si Phantom está instalada en el móvil
   useEffect(() => {
     if (window.solana && window.solana.isPhantom) {
-      checkIfWalletAlreadyConnected();
+      checkIfWalletAlreadyConnected(); // Verificar si la wallet ya estaba conectada previamente
     }
   }, []);
 
@@ -35,19 +41,31 @@ const WalletProvider = ({ children }) => {
     }
   };
 
-  // Conectar la wallet manualmente
+  // Función para conectar la wallet, manejando dispositivos móviles
   const connectWallet = async () => {
     try {
       const { solana } = window;
       if (solana && solana.isPhantom) {
         const response = await solana.connect();
-        setPublicKey(response.publicKey.toString());
         setWalletConnected(true);
+        setPublicKey(response.publicKey.toString());
         localStorage.setItem('walletConnected', 'true');
         toast.success('Tu Wallet está conectada 👻');
       } else {
-        window.open('https://phantom.app/', '_blank');
-        toast.error('Phantom Wallet no encontrada');
+        // Deep Link para dispositivos móviles
+        const redirectUrl = encodeURIComponent(window.location.href); // URL de regreso
+        const deepLink = `https://phantom.app/ul/v1/connect?appUrl=${redirectUrl}`;
+
+        if (isAndroid) {
+          // En Android, redirige a la app Phantom
+          window.location.href = deepLink;
+        } else if (isIOS) {
+          // En iOS, redirige a la app Phantom
+          window.location.href = deepLink;
+        } else {
+          // En caso de que esté en un entorno de escritorio o la wallet no esté disponible
+          window.open('https://phantom.app/', '_blank');
+        }
       }
     } catch (err) {
       console.error('Error al conectar la wallet Phantom', err);
@@ -55,7 +73,7 @@ const WalletProvider = ({ children }) => {
     }
   };
 
-  // Desconectar la wallet manualmente
+  // Función para desconectar la wallet
   const disconnectWallet = () => {
     if (window.solana && window.solana.disconnect) {
       window.solana.disconnect();
@@ -66,63 +84,31 @@ const WalletProvider = ({ children }) => {
     }
   };
 
-  // Cifrar un mensaje usando la clave pública del destinatario
-  const encryptMessage = (message, recipientPublicKey) => {
-    try {
-      const messageUint8 = naclUtil.decodeUTF8(message);
-      const recipientPublicKeyUint8 = bs58.decode(recipientPublicKey);
-
-      if (recipientPublicKeyUint8.length !== 32) {
-        toast.error('Clave pública del destinatario inválida');
-        return;
+  // Verificación automática al volver de la app de Phantom (móviles)
+  useEffect(() => {
+    const checkAuthorization = () => {
+      if (window.solana && window.solana.isPhantom) {
+        window.solana.connect({ onlyIfTrusted: true })
+          .then((response) => {
+            if (response) {
+              setWalletConnected(true);
+              setPublicKey(response.publicKey.toString());
+              toast.success('Wallet conectada 👻');
+              // Redirigir al navegador web después de la autorización
+              window.location.href = window.location.href;
+            }
+          })
+          .catch(() => {
+            setWalletConnected(false);
+          });
       }
+    };
 
-      const senderKeyPair = nacl.box.keyPair();
-      const nonce = nacl.randomBytes(nacl.box.nonceLength);
-      const encrypted = nacl.box(
-        messageUint8,
-        nonce,
-        recipientPublicKeyUint8,
-        senderKeyPair.secretKey
-      );
-
-      setNonce(naclUtil.encodeBase64(nonce));
-      setEncryptedMessage(naclUtil.encodeBase64(encrypted));
-
-      toast.success('Mensaje cifrado con éxito');
-    } catch (error) {
-      console.error('Error al cifrar el mensaje', error);
-      toast.error('Error al cifrar el mensaje');
+    // Intentar reconectar automáticamente después de volver desde la app de Phantom
+    if (isAndroid || isIOS) {
+      checkAuthorization();
     }
-  };
-
-  // Descifrar un mensaje usando la clave privada del destinatario
-  const decryptMessage = (encryptedMessage, recipientPrivateKey) => {
-    try {
-      const encryptedMessageUint8 = naclUtil.decodeBase64(encryptedMessage);
-      const nonceUint8 = naclUtil.decodeBase64(nonce);
-
-      const recipientPrivateKeyUint8 = bs58.decode(recipientPrivateKey);
-
-      const decrypted = nacl.box.open(
-        encryptedMessageUint8,
-        nonceUint8,
-        publicKey,
-        recipientPrivateKeyUint8
-      );
-
-      if (!decrypted) {
-        throw new Error('Error al descifrar el mensaje');
-      }
-
-      const decryptedText = naclUtil.encodeUTF8(decrypted);
-      setDecryptedMessage(decryptedText);
-      toast.success('Mensaje descifrado con éxito');
-    } catch (error) {
-      console.error('Error al descifrar el mensaje', error);
-      toast.error('Error al descifrar el mensaje');
-    }
-  };
+  }, [isAndroid, isIOS]);
 
   return (
     <WalletContext.Provider
@@ -131,10 +117,6 @@ const WalletProvider = ({ children }) => {
         publicKey,
         connectWallet,
         disconnectWallet,
-        encryptMessage,
-        encryptedMessage,
-        decryptMessage,
-        decryptedMessage,
       }}
     >
       {children}
