@@ -70,18 +70,14 @@ const WalletProvider = ({ children }) => {
         })
         .catch((err) => console.error("Error al conectar la wallet Phantom", err));
     } else {
-      // Detectar el sistema operativo y abrir el navegador de Phantom para acceder a la URL
-      const redirectUrl = encodeURIComponent("https://aramoth-legends.vercel.app/");
+      const redirectUrl = encodeURIComponent("https://aramoth-legends.vercel.app/"); // URL de regreso al navegador de Phantom
       const deepLink = `https://phantom.app/ul/v1/connect?appUrl=${redirectUrl}`;
 
-      if (isAndroid) {
-        // Si es Android, intentamos abrir en la app Phantom
-        window.location.href = deepLink;
-      } else if (isIOS) {
-        // Si es iOS, intentamos abrir en la app Phantom
+      if (isAndroid || isIOS) {
+        // Redirige a la app de Phantom en dispositivos móviles
         window.location.href = deepLink;
       } else {
-        // Si no se encuentra la app, redirigimos a la tienda de apps para instalar Phantom
+        // Para escritorio o Phantom no detectado
         window.open("https://phantom.app/", "_blank");
       }
     }
@@ -96,6 +92,31 @@ const WalletProvider = ({ children }) => {
       toast.success("Wallet desconectada 👻");
     }
   };
+
+  // Detectar si la app está autorizada y redirigir al navegador (para móviles)
+  useEffect(() => {
+    if (isAndroid || isIOS) {
+      const checkAuthorization = () => {
+        if (window.solana && window.solana.isPhantom) {
+          window.solana.connect({ onlyIfTrusted: true })
+            .then((response) => {
+              if (response) {
+                setWalletConnected(true);
+                setPublicKey(response.publicKey.toString());
+                toast.success("Wallet conectada 👻");
+                // Redirigir al navegador de la app Phantom
+                window.location.href = "https://aramoth-legends.vercel.app/"; // Refresca para verificar el estado
+              }
+            })
+            .catch(() => {
+              setWalletConnected(false);
+            });
+        }
+      };
+
+      checkAuthorization();
+    }
+  }, [isAndroid, isIOS, phantomInstalled]);
 
   return (
     <WalletContext.Provider
