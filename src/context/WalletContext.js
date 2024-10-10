@@ -59,17 +59,18 @@ const WalletProvider = ({ children }) => {
         })
         .catch((err) => console.error("Error al conectar la wallet Phantom", err));
     } else {
+      // Redireccionamiento a la app Phantom si no está instalada (deep link)
       const redirectUrl = encodeURIComponent("https://aramoth-legends.vercel.app/"); // URL de regreso al navegador Phantom
       const deepLink = `https://phantom.app/ul/v1/connect?appUrl=${redirectUrl}`;
 
       if (isAndroid) {
-        // En Android, intenta abrir la app de Phantom directamente
+        // En Android, redirige a la app de Phantom directamente
         window.location.href = deepLink;
       } else if (isIOS) {
-        // En iOS, intenta abrir la app de Phantom
+        // En iOS, redirige a la app de Phantom
         window.location.href = deepLink;
       } else {
-        // Para escritorio o Phantom no detectado
+        // Para escritorio o si Phantom no está instalado
         window.open("https://phantom.app/", "_blank");
       }
     }
@@ -86,7 +87,7 @@ const WalletProvider = ({ children }) => {
     }
   };
 
-  // Detectar si la app está autorizada y redirigir al navegador Phantom (para móviles)
+  // Detectar si la app Phantom está instalada y conectada en el móvil, y redirigir al navegador de la app Phantom
   useEffect(() => {
     if (isAndroid || isIOS) {
       const checkAuthorization = () => {
