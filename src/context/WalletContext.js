@@ -1,113 +1,99 @@
 // src/context/WalletContext.js
 import React, { createContext, useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import nacl from 'tweetnacl';
-import naclUtil from 'tweetnacl-util';
-import bs58 from 'bs58';
 
 export const WalletContext = createContext();
 
 const WalletProvider = ({ children }) => {
   const [walletConnected, setWalletConnected] = useState(false);
   const [publicKey, setPublicKey] = useState(null);
-  const [recipientPublicKey, setRecipientPublicKey] = useState(''); // Para manejar la clave pública del destinatario
-  const [encryptedMessage, setEncryptedMessage] = useState(''); // Para manejar el mensaje cifrado
-  const [nonce, setNonce] = useState(''); // Para manejar el nonce usado para desencriptar
-  const [decryptedMessage, setDecryptedMessage] = useState(''); // Para manejar el mensaje desencriptado
+  const [isAndroid, setIsAndroid] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+  const [phantomInstalled, setPhantomInstalled] = useState(false);
 
-  // Conectar a la wallet Phantom
-  const connectWallet = async () => {
+  // Detectar el sistema operativo (Android o iOS)
+  useEffect(() => {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+    if (/android/i.test(userAgent)) {
+      setIsAndroid(true);
+    } else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+      setIsIOS(true);
+    }
+  }, []);
+
+  // Detectar si Phantom está instalado en el navegador
+  useEffect(() => {
+    if (window.solana && window.solana.isPhantom) {
+      setPhantomInstalled(true);
+      checkIfWalletAlreadyConnected(); // Verificar si la wallet ya estaba conectada previamente
+    } else {
+      setPhantomInstalled(false);
+    }
+  }, []);
+
+  // Verificar si la wallet ya estaba conectada previamente
+  const checkIfWalletAlreadyConnected = async () => {
     try {
       const { solana } = window;
-      if (solana && solana.isPhantom) {
-        const response = await solana.connect();
+      if (solana.isPhantom && localStorage.getItem("walletConnected") === "true") {
+        const response = await solana.connect({ onlyIfTrusted: true });
         setWalletConnected(true);
         setPublicKey(response.publicKey.toString());
-        toast.success('Wallet conectada 👻');
-      } else {
-        toast.error('Phantom wallet no encontrada. Instálala para continuar.');
-        window.open('https://phantom.app/', '_blank');
+        toast.success("Tu Wallet sigue conectada 👻");
       }
     } catch (err) {
-      console.error('Error al conectar la wallet Phantom:', err);
+      console.error("Error al verificar la conexión con Phantom", err);
     }
   };
 
-  // Desconectar la wallet Phantom
+  // Conectar la wallet manualmente
+  const connectWallet = () => {
+    if (phantomInstalled) {
+      window.solana.connect()
+        .then((response) => {
+          setWalletConnected(true);
+          setPublicKey(response.publicKey.toString());
+          localStorage.setItem("walletConnected", "true");  // Guardamos el estado de conexión en localStorage
+          toast.success("Tu Wallet está conectada 👻");
+        })
+        .catch((err) => console.error("Error al conectar la wallet Phantom", err));
+    } else {
+      // Intentar usar enlaces profundos en lugar de redirigir a la tienda directamente
+      const redirectUrl = encodeURIComponent("https://aramoth-legends.vercel.app/"); // URL de regreso al navegador Phantom
+      const deepLink = `https://phantom.app/ul/v1/connect?appUrl=${redirectUrl}`;
+
+      if (isAndroid) {
+        // Intentar abrir la app de Phantom en Android
+        window.location.href = deepLink;
+
+        // Si no funciona (la app no está instalada), redirigir a la Play Store después de un retraso
+        setTimeout(() => {
+          window.location.href = 'https://play.google.com/store/apps/details?id=app.phantom';
+        }, 2000); // Si después de 2 segundos no conecta, asumimos que no está instalada
+      } else if (isIOS) {
+        // Intentar abrir la app de Phantom en iOS
+        window.location.href = deepLink;
+
+        // Si no funciona (la app no está instalada), redirigir a la App Store después de un retraso
+        setTimeout(() => {
+          window.location.href = 'https://apps.apple.com/us/app/phantom-solana-wallet/id1598432977';
+        }, 2000); // Si después de 2 segundos no conecta, asumimos que no está instalada
+      } else {
+        // Para escritorio o si Phantom no está instalado
+        window.open("https://phantom.app/", "_blank");
+      }
+    }
+  };
+
+  // Desconectar la wallet manualmente
   const disconnectWallet = () => {
     if (window.solana && window.solana.disconnect) {
       window.solana.disconnect();
       setWalletConnected(false);
       setPublicKey(null);
-      toast.success('Wallet desconectada 👻');
-    }
-  };
-
-  // Función para encriptar un mensaje
-  const encryptMessage = () => {
-    try {
-      console.log('Iniciando proceso de encriptación...');
-      
-      // Convertir el mensaje a Uint8Array
-      const messageUint8 = naclUtil.decodeUTF8(encryptedMessage);
-      console.log('Mensaje convertido a Uint8Array:', messageUint8);
-      
-      // Decodificar la clave pública del destinatario desde Base58 a Uint8Array
-      const recipientPublicKeyUint8 = bs58.decode(recipientPublicKey);
-      console.log('Clave pública del destinatario convertida desde Base58:', recipientPublicKeyUint8);
-
-      if (recipientPublicKeyUint8.length !== 32) {
-        console.error(`Tamaño inválido de clave pública del destinatario: ${recipientPublicKeyUint8.length}`);
-        return;
-      }
-
-      // Generar un par de claves para el remitente
-      const senderKeyPair = nacl.box.keyPair();
-      console.log('Par de claves del remitente generado.');
-
-      // Generar el nonce
-      const nonce = nacl.randomBytes(nacl.box.nonceLength);
-      console.log('Nonce generado:', nonce);
-
-      // Encriptar el mensaje
-      const encrypted = nacl.box(messageUint8, nonce, recipientPublicKeyUint8, senderKeyPair.secretKey);
-      console.log('Mensaje encriptado:', encrypted);
-
-      // Convertir el mensaje cifrado y el nonce a Base64 para transmitir
-      const encryptedMessageBase64 = naclUtil.encodeBase64(encrypted);
-      const nonceBase64 = naclUtil.encodeBase64(nonce);
-      console.log(`Mensaje encriptado (Base64): ${encryptedMessageBase64}, Nonce (Base64): ${nonceBase64}`);
-      
-      setEncryptedMessage(encryptedMessageBase64);
-      setNonce(nonceBase64);
-    } catch (error) {
-      console.error('Error al encriptar el mensaje:', error);
-    }
-  };
-
-  // Función para desencriptar el mensaje
-  const decryptMessage = () => {
-    try {
-      console.log('Iniciando proceso de desencriptación...');
-
-      // Decodificar el mensaje encriptado y el nonce desde Base64
-      const encryptedMessageUint8 = naclUtil.decodeBase64(encryptedMessage);
-      const nonceUint8 = naclUtil.decodeBase64(nonce);
-
-      // Usamos las claves del receptor para desencriptar (para este ejemplo, asumimos que es la clave pública actual)
-      const recipientKeyPair = nacl.box.keyPair(); 
-
-      const decrypted = nacl.box.open(encryptedMessageUint8, nonceUint8, publicKey, recipientKeyPair.secretKey);
-      if (!decrypted) {
-        throw new Error('Fallo al desencriptar el mensaje.');
-      }
-
-      const decryptedText = naclUtil.encodeUTF8(decrypted);
-      console.log('Mensaje desencriptado:', decryptedText);
-
-      setDecryptedMessage(decryptedText);
-    } catch (error) {
-      console.error('Error al desencriptar el mensaje:', error);
+      localStorage.removeItem("walletConnected");  // Quitamos el estado de conexión de localStorage
+      toast.success("Wallet desconectada 👻");
     }
   };
 
@@ -118,12 +104,9 @@ const WalletProvider = ({ children }) => {
         publicKey,
         connectWallet,
         disconnectWallet,
-        encryptedMessage,
-        recipientPublicKey,
-        setRecipientPublicKey,
-        encryptMessage,
-        decryptMessage,
-        decryptedMessage,
+        isAndroid,
+        isIOS,
+        phantomInstalled,
       }}
     >
       {children}
