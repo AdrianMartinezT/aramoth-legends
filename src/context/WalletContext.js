@@ -22,59 +22,51 @@ const WalletProvider = ({ children }) => {
     }
   }, []);
 
-  // Detectar si Phantom está instalado
+  // Detectar si Phantom está instalado en el navegador
   useEffect(() => {
     if (window.solana && window.solana.isPhantom) {
       setPhantomInstalled(true);
-      checkIfWalletConnected();
-
-      // Detectar cambios en el estado de conexión
-      window.solana.on('connect', (response) => {
-        setWalletConnected(true);
-        setPublicKey(response.publicKey.toString());
-        toast.success("Wallet conectada desde Phantom 👻");
-      });
-
-      window.solana.on('disconnect', () => {
-        setWalletConnected(false);
-        setPublicKey(null);
-        toast.success("Wallet desconectada 👻");
-      });
+      checkIfWalletAlreadyConnected(); // Verificar si la wallet ya estaba conectada previamente
     } else {
       setPhantomInstalled(false);
     }
   }, []);
 
-  // Función para verificar si la wallet está conectada
-  const checkIfWalletConnected = async () => {
+  // Verificar si la wallet ya estaba conectada previamente
+  const checkIfWalletAlreadyConnected = async () => {
     try {
       const { solana } = window;
-      if (solana.isPhantom) {
+      if (solana.isPhantom && localStorage.getItem("walletConnected") === "true") {
         const response = await solana.connect({ onlyIfTrusted: true });
         setWalletConnected(true);
         setPublicKey(response.publicKey.toString());
+        toast.success("Tu Wallet sigue conectada 👻");
       }
     } catch (err) {
-      console.error("Error al verificar conexión con Phantom", err);
+      console.error("Error al verificar la conexión con Phantom", err);
     }
   };
 
-  // Conectar la wallet usando deep linking para dispositivos móviles
+  // Conectar la wallet manualmente
   const connectWallet = () => {
     if (phantomInstalled) {
       window.solana.connect()
         .then((response) => {
           setWalletConnected(true);
           setPublicKey(response.publicKey.toString());
+          localStorage.setItem("walletConnected", "true");  // Guardamos el estado de conexión en localStorage
           toast.success("Tu Wallet está conectada 👻");
         })
         .catch((err) => console.error("Error al conectar la wallet Phantom", err));
     } else {
-      const redirectUrl = encodeURIComponent("https://aramoth-legends.vercel.app/"); // URL de regreso al navegador de Phantom
+      const redirectUrl = encodeURIComponent("https://aramoth-legends.vercel.app/"); // URL de regreso al navegador Phantom
       const deepLink = `https://phantom.app/ul/v1/connect?appUrl=${redirectUrl}`;
 
-      if (isAndroid || isIOS) {
-        // Redirige a la app de Phantom en dispositivos móviles
+      if (isAndroid) {
+        // En Android, intenta abrir la app de Phantom directamente
+        window.location.href = deepLink;
+      } else if (isIOS) {
+        // En iOS, intenta abrir la app de Phantom
         window.location.href = deepLink;
       } else {
         // Para escritorio o Phantom no detectado
@@ -83,17 +75,18 @@ const WalletProvider = ({ children }) => {
     }
   };
 
-  // Desconectar la wallet
+  // Desconectar la wallet manualmente
   const disconnectWallet = () => {
     if (window.solana && window.solana.disconnect) {
       window.solana.disconnect();
       setWalletConnected(false);
       setPublicKey(null);
+      localStorage.removeItem("walletConnected");  // Quitamos el estado de conexión de localStorage
       toast.success("Wallet desconectada 👻");
     }
   };
 
-  // Detectar si la app está autorizada y redirigir al navegador (para móviles)
+  // Detectar si la app está autorizada y redirigir al navegador Phantom (para móviles)
   useEffect(() => {
     if (isAndroid || isIOS) {
       const checkAuthorization = () => {
@@ -104,8 +97,8 @@ const WalletProvider = ({ children }) => {
                 setWalletConnected(true);
                 setPublicKey(response.publicKey.toString());
                 toast.success("Wallet conectada 👻");
-                // Redirigir al navegador de la app Phantom
-                window.location.href = "https://aramoth-legends.vercel.app/"; // Refresca para verificar el estado
+                // Redirigir al navegador Phantom
+                window.location.href = "https://aramoth-legends.vercel.app/"; 
               }
             })
             .catch(() => {
