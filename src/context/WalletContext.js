@@ -46,11 +46,13 @@ const WalletProvider = ({ children }) => {
     try {
       const { solana } = window;
       if (solana && solana.isPhantom) {
-        const response = await solana.connect();
-        setWalletConnected(true);
-        setPublicKey(response.publicKey.toString());
-        localStorage.setItem('walletConnected', 'true');
-        toast.success('Tu Wallet está conectada 👻');
+        const response = await solana.connect({ onlyIfTrusted: false });  // Autorización requerida
+        if (response) {
+          setWalletConnected(true);
+          setPublicKey(response.publicKey.toString());
+          localStorage.setItem('walletConnected', 'true'); // Mantener sesión
+          toast.success('Tu Wallet está conectada 👻');
+        }
       } else {
         // Deep Link para dispositivos móviles
         const redirectUrl = encodeURIComponent(window.location.href); // URL de regreso
@@ -73,7 +75,7 @@ const WalletProvider = ({ children }) => {
     }
   };
 
-  // Función para desconectar la wallet
+  // Función para desconectar la wallet manualmente
   const disconnectWallet = () => {
     if (window.solana && window.solana.disconnect) {
       window.solana.disconnect();
@@ -88,18 +90,19 @@ const WalletProvider = ({ children }) => {
   useEffect(() => {
     const checkAuthorization = () => {
       if (window.solana && window.solana.isPhantom) {
-        window.solana.connect({ onlyIfTrusted: true })
+        window.solana.connect({ onlyIfTrusted: false })  // Autorización manual siempre
           .then((response) => {
             if (response) {
               setWalletConnected(true);
               setPublicKey(response.publicKey.toString());
               toast.success('Wallet conectada 👻');
               // Redirigir al navegador web después de la autorización
-              window.location.href = window.location.href;
+              window.location.href = window.location.href; // Refrescar para verificar estado
             }
           })
           .catch(() => {
             setWalletConnected(false);
+            toast.error('Se canceló la conexión a la wallet');
           });
       }
     };
