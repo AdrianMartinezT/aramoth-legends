@@ -10,12 +10,9 @@ export const WalletContext = createContext();
 const WalletProvider = ({ children }) => {
   const [walletConnected, setWalletConnected] = useState(false);
   const [publicKey, setPublicKey] = useState(null);
+  const [phantomInstalled, setPhantomInstalled] = useState(false);
   const [isAndroid, setIsAndroid] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
-  const [phantomInstalled, setPhantomInstalled] = useState(false);
-  const [encryptedMessage, setEncryptedMessage] = useState('');
-  const [nonce, setNonce] = useState('');
-  const [decryptedMessage, setDecryptedMessage] = useState('');
 
   // Detectar si estamos en Android o iOS
   useEffect(() => {
@@ -28,11 +25,11 @@ const WalletProvider = ({ children }) => {
     }
   }, []);
 
-  // Detectar si Phantom está instalado en el navegador
+  // Verificar si Phantom está instalado en el navegador
   useEffect(() => {
     if (window.solana && window.solana.isPhantom) {
       setPhantomInstalled(true);
-      checkIfWalletAlreadyConnected(); // Verificar si la wallet ya estaba conectada previamente
+      checkIfWalletAlreadyConnected();  // Verificar si la wallet ya estaba conectada previamente
     } else {
       setPhantomInstalled(false);
     }
@@ -65,13 +62,14 @@ const WalletProvider = ({ children }) => {
         })
         .catch((err) => console.error('Error al conectar la wallet Phantom', err));
     } else {
+      // Redireccionar a la app Phantom para conectarse si no está instalada en el navegador
       const redirectUrl = encodeURIComponent(window.location.href);
       const deepLink = `https://phantom.app/ul/v1/connect?appUrl=${redirectUrl}`;
 
       if (isAndroid) {
-        window.location.href = deepLink;
+        window.location.href = deepLink;  // Redirigir a la app Phantom en Android
       } else if (isIOS) {
-        window.location.href = deepLink;
+        window.location.href = deepLink;  // Redirigir a la app Phantom en iOS
       } else {
         window.open('https://phantom.app/', '_blank');
       }
@@ -84,53 +82,39 @@ const WalletProvider = ({ children }) => {
       window.solana.disconnect();
       setWalletConnected(false);
       setPublicKey(null);
-      localStorage.removeItem('walletConnected');
+      localStorage.removeItem('walletConnected');  // Quitamos el estado de conexión del almacenamiento local
       toast.success('Wallet desconectada 👻');
     }
   };
 
-  // Encriptar el mensaje
-  const encryptMessage = (message, recipientPublicKey) => {
-    try {
-      const messageUint8 = naclUtil.decodeUTF8(message);
-      const recipientPublicKeyUint8 = bs58.decode(recipientPublicKey);
-
-      if (recipientPublicKeyUint8.length !== 32) {
-        console.error(`Invalid recipient public key size: ${recipientPublicKeyUint8.length}`);
-        return;
+  // Detectar si la wallet ya estaba autorizada y conectada cuando se regresa desde la app Phantom
+  useEffect(() => {
+    const handleWalletConnect = () => {
+      if (window.solana && window.solana.isPhantom) {
+        window.solana.connect({ onlyIfTrusted: true })
+          .then((response) => {
+            setWalletConnected(true);
+            setPublicKey(response.publicKey.toString());
+            toast.success('Wallet conectada 👻');
+          })
+          .catch((err) => {
+            setWalletConnected(false);
+            console.error('Error al reconectar la wallet Phantom', err);
+          });
       }
+    };
 
-      const senderKeyPair = nacl.box.keyPair();
-      const nonce = nacl.randomBytes(nacl.box.nonceLength);
-
-      const encrypted = nacl.box(messageUint8, nonce, recipientPublicKeyUint8, senderKeyPair.secretKey);
-      const encryptedMessageBase64 = naclUtil.encodeBase64(encrypted);
-      const nonceBase64 = naclUtil.encodeBase64(nonce);
-
-      setEncryptedMessage(`Encrypted Message: ${encryptedMessageBase64}, Nonce: ${nonceBase64}`);
-      setNonce(nonceBase64);
-    } catch (error) {
-      console.error('Encryption failed:', error);
+    // Escuchar el evento de reconexión cuando se regresa desde la app Phantom
+    if (phantomInstalled) {
+      window.addEventListener('focus', handleWalletConnect);
     }
-  };
 
-  // Desencriptar el mensaje
-  const decryptMessage = (encryptedMessage, recipientKeyPair) => {
-    try {
-      const encryptedMessageUint8 = naclUtil.decodeBase64(encryptedMessage.split(':')[1].trim());
-      const nonceUint8 = naclUtil.decodeBase64(nonce);
-
-      const decrypted = nacl.box.open(encryptedMessageUint8, nonceUint8, publicKey, recipientKeyPair.secretKey);
-      if (!decrypted) {
-        throw new Error('Failed to decrypt the message.');
+    return () => {
+      if (phantomInstalled) {
+        window.removeEventListener('focus', handleWalletConnect);
       }
-
-      const decryptedText = naclUtil.encodeUTF8(decrypted);
-      setDecryptedMessage(decryptedText);
-    } catch (error) {
-      console.error('Decryption failed:', error);
-    }
-  };
+    };
+  }, [phantomInstalled]);
 
   return (
     <WalletContext.Provider
@@ -139,10 +123,6 @@ const WalletProvider = ({ children }) => {
         publicKey,
         connectWallet,
         disconnectWallet,
-        encryptMessage,
-        decryptMessage,
-        encryptedMessage,
-        decryptedMessage
       }}
     >
       {children}
