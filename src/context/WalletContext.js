@@ -1,5 +1,8 @@
 // src/context/WalletContext.js
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState } from 'react';
+import nacl from 'tweetnacl';
+import naclUtil from 'tweetnacl-util';
+import bs58 from 'bs58';
 import toast from 'react-hot-toast';
 
 export const WalletContext = createContext();
@@ -7,110 +10,101 @@ export const WalletContext = createContext();
 const WalletProvider = ({ children }) => {
   const [walletConnected, setWalletConnected] = useState(false);
   const [publicKey, setPublicKey] = useState(null);
-  const [isAndroid, setIsAndroid] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
-  const [phantomInstalled, setPhantomInstalled] = useState(false);
+  const [message, setMessage] = useState('');
+  const [recipientPublicKey, setRecipientPublicKey] = useState('');
+  const [encryptedMessage, setEncryptedMessage] = useState('');
+  const [nonce, setNonce] = useState(''); // Para la descifrado
+  const [decryptedMessage, setDecryptedMessage] = useState('');
 
-  // Detectar el sistema operativo (Android o iOS)
-  useEffect(() => {
-    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-
-    if (/android/i.test(userAgent)) {
-      setIsAndroid(true);
-    } else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-      setIsIOS(true);
-    }
-  }, []);
-
-  // Detectar si Phantom está instalado en el navegador
-  useEffect(() => {
-    if (window.solana && window.solana.isPhantom) {
-      setPhantomInstalled(true);
-      checkIfWalletAlreadyConnected(); // Verificar si la wallet ya estaba conectada previamente
-    } else {
-      setPhantomInstalled(false);
-    }
-  }, []);
-
-  // Verificar si la wallet ya estaba conectada previamente
-  const checkIfWalletAlreadyConnected = async () => {
+  // Conectar la wallet
+  const connectWallet = async () => {
     try {
       const { solana } = window;
-      if (solana.isPhantom && localStorage.getItem("walletConnected") === "true") {
-        const response = await solana.connect({ onlyIfTrusted: true });
-        setWalletConnected(true);
+      if (solana && solana.isPhantom) {
+        const response = await solana.connect();
         setPublicKey(response.publicKey.toString());
-        toast.success("Tu Wallet sigue conectada 👻");
-      }
-    } catch (err) {
-      console.error("Error al verificar la conexión con Phantom", err);
-    }
-  };
-
-  // Conectar la wallet manualmente
-  const connectWallet = () => {
-    if (phantomInstalled) {
-      window.solana.connect()
-        .then((response) => {
-          setWalletConnected(true);
-          setPublicKey(response.publicKey.toString());
-          localStorage.setItem("walletConnected", "true");  // Guardamos el estado de conexión en localStorage
-          toast.success("Tu Wallet está conectada 👻");
-        })
-        .catch((err) => console.error("Error al conectar la wallet Phantom", err));
-    } else {
-      // Redireccionamiento a la app Phantom si no está instalada (deep link)
-      const redirectUrl = encodeURIComponent("https://aramoth-legends.vercel.app/"); // URL de regreso al navegador Phantom
-      const deepLink = `https://phantom.app/ul/v1/connect?appUrl=${redirectUrl}`;
-
-      if (isAndroid) {
-        // En Android, redirige a la app de Phantom directamente
-        window.location.href = deepLink;
-      } else if (isIOS) {
-        // En iOS, redirige a la app de Phantom
-        window.location.href = deepLink;
+        setWalletConnected(true);
+        toast.success("Tu Wallet está conectada 👻");
       } else {
-        // Para escritorio o si Phantom no está instalado
         window.open("https://phantom.app/", "_blank");
       }
+    } catch (err) {
+      console.error(err);
+      toast.error("Error al conectar la wallet");
     }
   };
 
-  // Desconectar la wallet manualmente
+  // Desconectar la wallet
   const disconnectWallet = () => {
     if (window.solana && window.solana.disconnect) {
       window.solana.disconnect();
       setWalletConnected(false);
       setPublicKey(null);
-      localStorage.removeItem("walletConnected");  // Quitamos el estado de conexión de localStorage
       toast.success("Wallet desconectada 👻");
     }
   };
 
-  // Detectar si la app Phantom está instalada y conectada en el móvil, y redirigir al navegador de la app Phantom
-  useEffect(() => {
-    if (isAndroid || isIOS) {
-      const checkAuthorization = () => {
-        if (window.solana && window.solana.isPhantom) {
-          window.solana.connect({ onlyIfTrusted: true })
-            .then((response) => {
-              if (response) {
-                setWalletConnected(true);
-                setPublicKey(response.publicKey.toString());
-                toast.success("Wallet conectada 👻");
-                // Redirigir al navegador Phantom
-                window.location.href = "https://aramoth-legends.vercel.app/"; 
-              }
-            })
-            .catch(() => {
-              setWalletConnected(false);
-            });
-        }
-      };
+  // Función para cifrar el mensaje
+  const encryptMessage = () => {
+    try {
+      console.log('Iniciando el proceso de cifrado...');
+      
+      // Decodificamos el mensaje a Uint8Array
+      const messageUint8 = naclUtil.decodeUTF8(message);
+      
+      // Decodificamos la clave pública del destinatario de Base58 a Uint8Array
+      const recipientPublicKeyUint8 = bs58.decode(recipientPublicKey);
 
-      checkAuthorization();
+      // Verificamos el tamaño correcto de la clave pública
+      if (recipientPublicKeyUint8.length !== 32) {
+        console.error('Clave pública del destinatario inválida.');
+        return;
+      }
+
+      // Generar par de claves para el remitente (demostrativo)
+      const senderKeyPair = nacl.box.keyPair();
+      
+      // Generar nonce
+      const nonce = nacl.randomBytes(nacl.box.nonceLength);
+
+      // Cifrar el mensaje
+      const encrypted = nacl.box(messageUint8, nonce, recipientPublicKeyUint8, senderKeyPair.secretKey);
+
+      // Codificar a Base64
+      const encryptedMessageBase64 = naclUtil.encodeBase64(encrypted);
+      const nonceBase64 = naclUtil.encodeBase64(nonce);
+
+      setEncryptedMessage(`Encrypted Message: ${encryptedMessageBase64}, Nonce: ${nonceBase64}`);
+      setNonce(nonceBase64);
+    } catch (error) {
+      console.error('Cifrado fallido:', error);
     }
-  }, [isAndroid, isIOS, phantomInstalled]);
+  };
+
+  // Función para descifrar el mensaje
+  const decryptMessage = () => {
+    try {
+      console.log('Iniciando el proceso de descifrado...');
+
+      // Decodificar el mensaje cifrado y el nonce desde Base64
+      const encryptedMessageUint8 = naclUtil.decodeBase64(encryptedMessage.split(':')[1].trim());
+      const nonceUint8 = naclUtil.decodeBase64(nonce);
+
+      // El destinatario debe tener su par de claves para descifrar
+      const recipientKeyPair = nacl.box.keyPair(); // Ejemplo, debería ser la clave secreta real del destinatario
+
+      // Descifrar el mensaje
+      const decrypted = nacl.box.open(encryptedMessageUint8, nonceUint8, publicKey, recipientKeyPair.secretKey);
+      if (!decrypted) {
+        throw new Error('Fallo en el descifrado.');
+      }
+
+      const decryptedText = naclUtil.encodeUTF8(decrypted);
+      setDecryptedMessage(decryptedText);
+    } catch (error) {
+      console.error('Descifrado fallido:', error);
+    }
+  };
 
   return (
     <WalletContext.Provider
@@ -119,9 +113,14 @@ const WalletProvider = ({ children }) => {
         publicKey,
         connectWallet,
         disconnectWallet,
-        isAndroid,
-        isIOS,
-        phantomInstalled,
+        message,
+        recipientPublicKey,
+        encryptedMessage,
+        decryptedMessage,
+        setMessage,
+        setRecipientPublicKey,
+        encryptMessage,
+        decryptMessage
       }}
     >
       {children}
