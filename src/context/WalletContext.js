@@ -22,7 +22,7 @@ const WalletProvider = ({ children }) => {
     }
   }, []);
 
-  // Detectar si Phantom está instalado
+  // Detectar si Phantom está instalado y manejar eventos de conexión/desconexión
   useEffect(() => {
     if (window.solana && window.solana.isPhantom) {
       setPhantomInstalled(true);
@@ -45,21 +45,23 @@ const WalletProvider = ({ children }) => {
     }
   }, []);
 
-  // Función para chequear si ya está conectada la wallet
+  // Verificar si la wallet ya está conectada al regresar al navegador
   const checkIfWalletConnected = async () => {
     try {
       const { solana } = window;
       if (solana.isPhantom) {
         const response = await solana.connect({ onlyIfTrusted: true });
-        setWalletConnected(true);
-        setPublicKey(response.publicKey.toString());
+        if (response) {
+          setWalletConnected(true);
+          setPublicKey(response.publicKey.toString());
+        }
       }
     } catch (err) {
       console.error("Error al verificar conexión con Phantom", err);
     }
   };
 
-  // Función para conectar la wallet manualmente
+  // Función para conectar la wallet
   const connectWallet = () => {
     if (phantomInstalled) {
       window.solana.connect()
@@ -95,6 +97,21 @@ const WalletProvider = ({ children }) => {
       toast.success("Wallet desconectada 👻");
     }
   };
+
+  // Detectar cuando se regrese al navegador desde la app de Phantom
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        checkIfWalletConnected(); // Verificar si la wallet ya está conectada al regresar al navegador
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
 
   return (
     <WalletContext.Provider
