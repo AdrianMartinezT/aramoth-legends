@@ -50,6 +50,7 @@ const WalletProvider = ({ children }) => {
   // Conectar la wallet manualmente
   const connectWallet = () => {
     if (phantomInstalled) {
+      // Conectar si Phantom está instalado en el navegador
       window.solana.connect()
         .then((response) => {
           setWalletConnected(true);
@@ -59,26 +60,16 @@ const WalletProvider = ({ children }) => {
         })
         .catch((err) => console.error("Error al conectar la wallet Phantom", err));
     } else {
-      // Intentar usar enlaces profundos en lugar de redirigir a la tienda directamente
+      // Redireccionamiento a la app Phantom si no está instalada (deep link)
       const redirectUrl = encodeURIComponent("https://aramoth-legends.vercel.app/"); // URL de regreso al navegador Phantom
       const deepLink = `https://phantom.app/ul/v1/connect?appUrl=${redirectUrl}`;
 
       if (isAndroid) {
-        // Intentar abrir la app de Phantom en Android
+        // En Android, intenta abrir la app de Phantom directamente
         window.location.href = deepLink;
-
-        // Si no funciona (la app no está instalada), redirigir a la Play Store después de un retraso
-        setTimeout(() => {
-          window.location.href = 'https://play.google.com/store/apps/details?id=app.phantom';
-        }, 2000); // Si después de 2 segundos no conecta, asumimos que no está instalada
       } else if (isIOS) {
-        // Intentar abrir la app de Phantom en iOS
+        // En iOS, intenta abrir la app de Phantom
         window.location.href = deepLink;
-
-        // Si no funciona (la app no está instalada), redirigir a la App Store después de un retraso
-        setTimeout(() => {
-          window.location.href = 'https://apps.apple.com/us/app/phantom-solana-wallet/id1598432977';
-        }, 2000); // Si después de 2 segundos no conecta, asumimos que no está instalada
       } else {
         // Para escritorio o si Phantom no está instalado
         window.open("https://phantom.app/", "_blank");
@@ -96,6 +87,31 @@ const WalletProvider = ({ children }) => {
       toast.success("Wallet desconectada 👻");
     }
   };
+
+  // Detectar si la app Phantom está instalada y conectada en el móvil, y redirigir al navegador de la app Phantom
+  useEffect(() => {
+    if (isAndroid || isIOS) {
+      const checkAuthorization = () => {
+        if (window.solana && window.solana.isPhantom) {
+          window.solana.connect({ onlyIfTrusted: true })
+            .then((response) => {
+              if (response) {
+                setWalletConnected(true);
+                setPublicKey(response.publicKey.toString());
+                toast.success("Wallet conectada 👻");
+                // Redirigir al navegador Phantom
+                window.location.href = "https://aramoth-legends.vercel.app/"; 
+              }
+            })
+            .catch(() => {
+              setWalletConnected(false);
+            });
+        }
+      };
+
+      checkAuthorization();
+    }
+  }, [isAndroid, isIOS, phantomInstalled]);
 
   return (
     <WalletContext.Provider

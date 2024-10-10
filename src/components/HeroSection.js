@@ -1,3 +1,4 @@
+// src/components/HeroSection.js
 import React, { useEffect } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
@@ -10,7 +11,7 @@ const HeroSection = ({ walletConnected, connectWallet, disconnectWallet }) => {
 
   useEffect(() => {
     if (walletConnected) {
-      navigate('/Create');
+      navigate('/Create');  // Redirige a la página Create si está conectada la wallet
     }
   }, [walletConnected, navigate]);
 
