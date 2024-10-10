@@ -26,14 +26,42 @@ const WalletProvider = ({ children }) => {
   useEffect(() => {
     if (window.solana && window.solana.isPhantom) {
       setPhantomInstalled(true);
+      checkIfWalletConnected();
+      
+      // Detectar cambios en el estado de conexión
+      window.solana.on('connect', (response) => {
+        setWalletConnected(true);
+        setPublicKey(response.publicKey.toString());
+        toast.success("Wallet conectada desde Phantom 👻");
+      });
+
+      window.solana.on('disconnect', () => {
+        setWalletConnected(false);
+        setPublicKey(null);
+        toast.success("Wallet desconectada 👻");
+      });
     } else {
       setPhantomInstalled(false);
     }
   }, []);
 
+  // Función para chequear si ya está conectada la wallet
+  const checkIfWalletConnected = async () => {
+    try {
+      const { solana } = window;
+      if (solana.isPhantom) {
+        const response = await solana.connect({ onlyIfTrusted: true });
+        setWalletConnected(true);
+        setPublicKey(response.publicKey.toString());
+      }
+    } catch (err) {
+      console.error("Error al verificar conexión con Phantom", err);
+    }
+  };
+
+  // Función para conectar la wallet manualmente
   const connectWallet = () => {
     if (phantomInstalled) {
-      // Conectar si Phantom está instalado en el navegador
       window.solana.connect()
         .then((response) => {
           setWalletConnected(true);
@@ -53,6 +81,7 @@ const WalletProvider = ({ children }) => {
     }
   };
 
+  // Función para desconectar la wallet manualmente
   const disconnectWallet = () => {
     if (window.solana && window.solana.disconnect) {
       window.solana.disconnect();
