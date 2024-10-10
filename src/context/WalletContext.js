@@ -27,7 +27,7 @@ const WalletProvider = ({ children }) => {
     if (window.solana && window.solana.isPhantom) {
       setPhantomInstalled(true);
       checkIfWalletConnected();
-      
+
       // Detectar cambios en el estado de conexión
       window.solana.on('connect', (response) => {
         setWalletConnected(true);
@@ -70,11 +70,16 @@ const WalletProvider = ({ children }) => {
         })
         .catch((err) => console.error("Error al conectar la wallet Phantom", err));
     } else {
-      // Detectar si estamos en Android o iOS y redirigir a la app
+      // Detectar si estamos en Android o iOS y redirigir a la app de Phantom usando deep links
+      const redirectUrl = encodeURIComponent(window.location.href);  // La URL a la que regresarás después de loguearte
+      const deepLink = `https://phantom.app/ul/v1/connect?appUrl=${redirectUrl}`;
+
       if (isAndroid) {
-        window.open("https://play.google.com/store/apps/details?id=app.phantom", "_blank");
+        // Enlace profundo específico para Android
+        window.location.href = deepLink;
       } else if (isIOS) {
-        window.open("https://apps.apple.com/us/app/phantom-solana-wallet/id1598432977", "_blank");
+        // Enlace profundo específico para iOS
+        window.location.href = deepLink;
       } else {
         window.open("https://phantom.app/", "_blank");
       }
