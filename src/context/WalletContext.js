@@ -12,10 +12,8 @@ const WalletProvider = ({ children }) => {
   const [isAndroid, setIsAndroid] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [phantomInstalled, setPhantomInstalled] = useState(false);
+  const dappKeyPair = useRef(nacl.box.keyPair()); // Generación de par de claves
 
-  const dappKeyPair = useRef(nacl.box.keyPair());
-
-  // Detectar el sistema operativo
   useEffect(() => {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
     if (/android/i.test(userAgent)) {
@@ -25,7 +23,6 @@ const WalletProvider = ({ children }) => {
     }
   }, []);
 
-  // Detectar si Phantom está instalada
   useEffect(() => {
     if (window.solana && window.solana.isPhantom) {
       setPhantomInstalled(true);
@@ -35,7 +32,6 @@ const WalletProvider = ({ children }) => {
     }
   }, []);
 
-  // Verificar si la wallet ya está conectada
   const checkIfWalletAlreadyConnected = async () => {
     try {
       const { solana } = window;
@@ -52,7 +48,6 @@ const WalletProvider = ({ children }) => {
     }
   };
 
-  // Conectar la wallet manualmente con deep link para móviles
   const connectWallet = () => {
     if (phantomInstalled) {
       window.solana.connect()
@@ -72,49 +67,37 @@ const WalletProvider = ({ children }) => {
       const appUrl = encodeURIComponent('https://aramoth-legends.vercel.app/');
       const redirectLink = encodeURIComponent(window.location.href);
       const dappEncryptionPublicKey = bs58.encode(dappKeyPair.current.publicKey);
-
       const link = `https://phantom.app/ul/v1/connect?app_url=${appUrl}&dapp_encryption_public_key=${dappEncryptionPublicKey}&redirect_link=${redirectLink}&cluster=mainnet-beta`;
-
       window.location.href = link;
     }
   };
 
-  // Manejar el redireccionamiento de vuelta desde Phantom
   useEffect(() => {
     const handleRedirect = async () => {
       const url = new URL(window.location.href);
       const params = url.searchParams;
-
       if (params.get('phantom_encryption_public_key')) {
         const phantomEncryptionPublicKey = bs58.decode(params.get('phantom_encryption_public_key'));
         const sharedSecret = nacl.box.before(phantomEncryptionPublicKey, dappKeyPair.current.secretKey);
-
         const encryptedData = params.get('data');
         const nonce = bs58.decode(params.get('nonce'));
         const decryptedData = nacl.box.open.after(bs58.decode(encryptedData), nonce, sharedSecret);
-
         if (!decryptedData) {
           console.error("Error al descifrar los datos");
           return;
         }
-
         const connectionData = JSON.parse(naclUtil.encodeUTF8(decryptedData));
         const { public_key } = connectionData;
-
         setWalletConnected(true);
         setPublicKey(public_key);
         localStorage.setItem("walletConnected", "true");
         toast.success("Tu Wallet está conectada 👻");
-
-        // Remover los parámetros de la URL
         window.history.replaceState({}, document.title, url.pathname);
       }
     };
-
     handleRedirect();
   }, []);
 
-  // Desconectar la wallet manualmente
   const disconnectWallet = () => {
     if (window.solana && window.solana.disconnect) {
       window.solana.disconnect();
@@ -126,17 +109,15 @@ const WalletProvider = ({ children }) => {
   };
 
   return (
-    <WalletContext.Provider
-      value={{
-        walletConnected,
-        publicKey,
-        connectWallet,
-        disconnectWallet,
-        isAndroid,
-        isIOS,
-        phantomInstalled,
-      }}
-    >
+    <WalletContext.Provider value={{
+      walletConnected,
+      publicKey,
+      connectWallet,
+      disconnectWallet,
+      isAndroid,
+      isIOS,
+      phantomInstalled
+    }}>
       {children}
     </WalletContext.Provider>
   );
