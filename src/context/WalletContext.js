@@ -13,13 +13,11 @@ const WalletProvider = ({ children }) => {
   const [isIOS, setIsIOS] = useState(false);
   const [phantomInstalled, setPhantomInstalled] = useState(false);
 
-  // Clave para cifrado y descifrado
   const dappKeyPair = useRef(nacl.box.keyPair());
 
-  // Detectar el sistema operativo (Android o iOS)
+  // Detectar el sistema operativo
   useEffect(() => {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-
     if (/android/i.test(userAgent)) {
       setIsAndroid(true);
     } else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
@@ -31,13 +29,13 @@ const WalletProvider = ({ children }) => {
   useEffect(() => {
     if (window.solana && window.solana.isPhantom) {
       setPhantomInstalled(true);
-      checkIfWalletAlreadyConnected(); // Verificar si la wallet ya estaba conectada previamente
+      checkIfWalletAlreadyConnected();
     } else {
       setPhantomInstalled(false);
     }
   }, []);
 
-  // Verificar si la wallet ya estaba conectada previamente
+  // Verificar si la wallet ya está conectada
   const checkIfWalletAlreadyConnected = async () => {
     try {
       const { solana } = window;
@@ -54,7 +52,7 @@ const WalletProvider = ({ children }) => {
     }
   };
 
-  // Conectar la wallet manualmente con seguridad (requiere autorización en Phantom)
+  // Conectar la wallet manualmente con deep link para móviles
   const connectWallet = () => {
     if (phantomInstalled) {
       window.solana.connect()
@@ -71,10 +69,8 @@ const WalletProvider = ({ children }) => {
           toast.error("Autenticación fallida. No se completó la conexión.");
         });
     } else {
-      // Redireccionamiento a la app Phantom usando deep link
-      const appUrl = encodeURIComponent('https://aramoth-legends.vercel.app/'); 
+      const appUrl = encodeURIComponent('https://aramoth-legends.vercel.app/');
       const redirectLink = encodeURIComponent(window.location.href);
-
       const dappEncryptionPublicKey = bs58.encode(dappKeyPair.current.publicKey);
 
       const link = `https://phantom.app/ul/v1/connect?app_url=${appUrl}&dapp_encryption_public_key=${dappEncryptionPublicKey}&redirect_link=${redirectLink}&cluster=mainnet-beta`;
