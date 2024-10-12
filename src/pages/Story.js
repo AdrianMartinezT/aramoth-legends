@@ -13,31 +13,28 @@ const Story = () => {
         <h1 className={styles.title}>Historia de Aramoth Legends</h1>
         <div className={styles.scrollableText}>  {/* Contenedor con scroll */}
           <p className={styles.storyText}>
-          En las tierras antiguas de Elandor, donde el susurro del viento traía rumores de dragones y los cielos aún guardaban ecos de cantos élficos, se erguía el gran reino de Aramoth. Un reino bendecido por la abundancia de oro, piedras preciosas y los antiguos secretos de la magia. Gobernado durante siglos por la casa de los Tharion, Aramoth era el sueño de todo monarca. Sin embargo, con la inesperada muerte del Rey Valathor, sin dejar heredero legítimo, las puertas de la codicia se abrieron, y los siete reinos vecinos, como lobos hambrientos, fijaron sus ojos en sus riquezas.
+          In the ancient lands of Elandor, where the whispering winds carried rumors of dragons and the skies still held echoes of elven songs, stood the great kingdom of Aramoth. A kingdom blessed with an abundance of gold, precious stones, and the ancient secrets of magic. Ruled for centuries by the house of Tharion, Aramoth was every monarch's dream. However, with the sudden death of King Valathor, leaving no legitimate heir, the doors of greed swung open, and the seven neighboring kingdoms, like hungry wolves, set their eyes on its riches.
           </p>
           <p className={styles.storyText}>
-          Los reinos que rodeaban a Aramoth se prepararon para la guerra. En el norte, bajo montañas nevadas, el Reino de Galdrin, hogar de los enanos y sus legendarias forjas, armaba a sus guerreros con espadas tan brillantes como el sol. Los enanos, expertos en la minería, sabían que las riquezas de Aramoth podrían multiplicar su poder en el mundo.
+          The kingdoms surrounding Aramoth prepared for war. To the north, beneath snowy mountains, the Kingdom of Galdrin, home of the dwarves and their legendary forges, armed their warriors with swords as bright as the sun. The dwarves, experts in mining, knew that the riches of Aramoth could multiply their power in the world.
           </p>
           <p className={styles.storyText}>
-          Al este, el Reino de Eldora, donde los elfos habitaban en bosques encantados, observaba con cautela. Su reina, Élenyrta, poseedora de una sabiduría milenaria, sabía que la magia oculta en Aramoth era tan peligrosa como tentadora. Si caía en manos equivocadas, todo el equilibrio del mundo podría desmoronarse.
+          To the east, the Kingdom of Eldora, where elves dwelled in enchanted forests, watched cautiously. Their queen, Élenyrta, possessor of millennia-old wisdom, knew that the hidden magic in Aramoth was as dangerous as it was tempting. If it fell into the wrong hands, the balance of the world could crumble.
           </p>
           <p className={styles.storyText}>
-          Al sur, el caluroso Reino de Balgardán, habitado por tribus humanas y criaturas salvajes, comenzó a movilizarse bajo el mando del temido Señor de la Guerra, Zoran. Balgardán, conocido por su crueldad en el campo de batalla, veía en Aramoth una oportunidad para extender su dominio y forjar un imperio que cubriera todas las tierras de Elandor.
+          To the south, the scorching Kingdom of Balgardán, inhabited by human tribes and wild creatures, began to mobilize under the command of the feared Warlord Zoran. Balgardán, known for its cruelty on the battlefield, saw in Aramoth an opportunity to expand its dominion and forge an empire that would cover all the lands of Elandor.
           </p>
           <p className={styles.storyText}>
-          El oeste traía consigo el Reino de Velarian, cuyos magos oscuros habían anhelado por siglos el poder que yacía en las entrañas de Aramoth. Su líder, el Archimago Serafoth, soñaba con liberar antiguos demonios sellados bajo las catacumbas del reino caído.
-
+          From the west came the Kingdom of Velarian, whose dark mages had long coveted the power buried in the depths of Aramoth. Their leader, Archmage Serafoth, dreamed of unleashing ancient demons sealed beneath the catacombs of the fallen kingdom.
           </p>
           <p className={styles.storyText}>
-          Los otros tres reinos —Aldoria, Thalendra y Norandor—, aunque más pequeños, no eran menos ambiciosos. Aldoria, el reino más militarizado, confiaba en su vasta armada, mientras que Thalendra, con sus misteriosos alquimistas, buscaba secretos que los pudieran hacer invencibles. Norandor, el más joven de los reinos, intentaba usar la diplomacia para tejer una red de alianzas que le permitiera reclamar el trono de Aramoth sin derramar sangre.
-
+          The other three kingdoms—Aldoria, Thalendra, and Norandor—though smaller, were no less ambitious. Aldoria, the most militarized kingdom, relied on its vast navy, while Thalendra, with its mysterious alchemists, sought secrets that could make them invincible. Norandor, the youngest of the kingdoms, attempted to use diplomacy to weave a web of alliances that would allow them to claim the throne of Aramoth without shedding blood.
           </p>
           <p className={styles.storyText}>
-          Pero Aramoth no estaba completamente desprotegido. Aunque sin un rey que los guiara, los Guardianes de Aramoth, una antigua orden de caballeros, permanecían fieles a su juramento de proteger las tierras del reino. Liderados por Sir Dovoric y Sir Lunvador, los últimos de los grandes comandantes, sabían que pronto se desataría una tormenta de sangre y acero, y que ellos serían la primera línea de defensa.
-
+          But Aramoth was not entirely defenseless. Though without a king to guide them, the Guardians of Aramoth, an ancient order of knights, remained loyal to their oath to protect the lands of the kingdom. Led by Sir Dovoric and Sir Lunvador, the last of the great commanders, they knew that a storm of blood and steel would soon break out, and they would be the first line of defense.
           </p>
           <p className={styles.storyText}>
-          La leyenda de Aramoth comenzaba a forjarse en las llamas de la guerra inminente. El equilibrio del mundo pendía de un hilo. Solo una cosa era segura: el reino que lograra hacerse con Aramoth no solo controlaría sus riquezas, sino el destino de toda Elandor.
+          The legend of Aramoth was beginning to be forged in the flames of the impending war. The balance of the world hung by a thread. One thing was certain: the kingdom that managed to seize Aramoth would not only control its riches but also the fate of all Elandor.
           </p>
         </div>
       </div>
