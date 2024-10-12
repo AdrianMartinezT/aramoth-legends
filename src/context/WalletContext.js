@@ -129,8 +129,6 @@ const WalletProvider = ({ children }) => {
     toast.success("Wallet desconectada 👻");
   };
 
-  
-
   return (
     <WalletContext.Provider
       value={{
