@@ -1,7 +1,7 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
 import nacl from 'tweetnacl';
-import naclUtil from 'tweetnacl-util'; // Corregimos la importación
+import naclUtil from 'tweetnacl-util';
 import bs58 from 'bs58';
 
 export const WalletContext = createContext();
@@ -12,9 +12,9 @@ const WalletProvider = ({ children }) => {
   const [isAndroid, setIsAndroid] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [phantomInstalled, setPhantomInstalled] = useState(false);
-  const [encryptedMessage, setEncryptedMessage] = useState('');
-  const [nonce, setNonce] = useState('');
-  const [decryptedMessage, setDecryptedMessage] = useState('');
+
+  // Clave para cifrado y descifrado
+  const dappKeyPair = useRef(nacl.box.keyPair());
 
   // Detectar el sistema operativo (Android o iOS)
   useEffect(() => {
@@ -27,7 +27,7 @@ const WalletProvider = ({ children }) => {
     }
   }, []);
 
-  // Detectar si Phantom está instalado
+  // Detectar si Phantom está instalada
   useEffect(() => {
     if (window.solana && window.solana.isPhantom) {
       setPhantomInstalled(true);
@@ -71,75 +71,65 @@ const WalletProvider = ({ children }) => {
           toast.error("Autenticación fallida. No se completó la conexión.");
         });
     } else {
-      // Redireccionamiento a la app Phantom si no está instalada (deep link)
-      const redirectUrl = encodeURIComponent("https://aramoth-legends.vercel.app/");
-      const deepLink = `https://phantom.app/ul/v1/connect?appUrl=${redirectUrl}`;
+      // Redireccionamiento a la app Phantom usando deep link
+      const appUrl = encodeURIComponent('https://aramoth-legends.vercel.app/'); 
+      const redirectLink = encodeURIComponent(window.location.href);
 
-      if (isAndroid) {
-        window.location.href = deepLink;
-      } else if (isIOS) {
-        window.location.href = deepLink;
-      } else {
-        window.open("https://phantom.app/", "_blank");
-      }
+      const dappEncryptionPublicKey = bs58.encode(dappKeyPair.current.publicKey);
+
+      const link = `https://phantom.app/ul/v1/connect?app_url=${appUrl}&dapp_encryption_public_key=${dappEncryptionPublicKey}&redirect_link=${redirectLink}&cluster=mainnet-beta`;
+
+      window.location.href = link;
     }
   };
+
+  // Manejar el redireccionamiento de vuelta desde Phantom
+  useEffect(() => {
+    const handleRedirect = async () => {
+      const url = new URL(window.location.href);
+      const params = url.searchParams;
+
+      if (params.get('phantom_encryption_public_key')) {
+        const phantomEncryptionPublicKey = bs58.decode(params.get('phantom_encryption_public_key'));
+        const sharedSecret = nacl.box.before(phantomEncryptionPublicKey, dappKeyPair.current.secretKey);
+
+        const encryptedData = params.get('data');
+        const nonce = bs58.decode(params.get('nonce'));
+        const decryptedData = nacl.box.open.after(bs58.decode(encryptedData), nonce, sharedSecret);
+
+        if (!decryptedData) {
+          console.error("Error al descifrar los datos");
+          return;
+        }
+
+        const connectionData = JSON.parse(naclUtil.encodeUTF8(decryptedData));
+        const { public_key } = connectionData;
+
+        setWalletConnected(true);
+        setPublicKey(public_key);
+        localStorage.setItem("walletConnected", "true");
+        toast.success("Tu Wallet está conectada 👻");
+
+        // Remover los parámetros de la URL
+        window.history.replaceState({}, document.title, url.pathname);
+      }
+    };
+
+    handleRedirect();
+  }, []);
 
   // Desconectar la wallet manualmente
   const disconnectWallet = () => {
     if (window.solana && window.solana.disconnect) {
       window.solana.disconnect();
-      setWalletConnected(false);
-      setPublicKey(null);
-      localStorage.removeItem("walletConnected");
-      toast.success("Wallet desconectada 👻");
     }
+    setWalletConnected(false);
+    setPublicKey(null);
+    localStorage.removeItem("walletConnected");
+    toast.success("Wallet desconectada 👻");
   };
 
-  // Cifrado y descifrado de mensajes con seguridad
-  const encryptMessage = (message, recipientPublicKey) => {
-    try {
-      const messageUint8 = naclUtil.decodeUTF8(message);
-      const recipientPublicKeyUint8 = bs58.decode(recipientPublicKey);
-
-      if (recipientPublicKeyUint8.length !== 32) {
-        console.error("Public key inválida");
-        return;
-      }
-
-      const senderKeyPair = nacl.box.keyPair();
-      const nonce = nacl.randomBytes(nacl.box.nonceLength);
-      const encrypted = nacl.box(messageUint8, nonce, recipientPublicKeyUint8, senderKeyPair.secretKey);
-
-      const encryptedMessageBase64 = naclUtil.encodeBase64(encrypted);
-      const nonceBase64 = naclUtil.encodeBase64(nonce);
-
-      setEncryptedMessage(encryptedMessageBase64);
-      setNonce(nonceBase64);
-
-      console.log("Mensaje cifrado con éxito");
-    } catch (error) {
-      console.error("Error cifrando el mensaje:", error);
-    }
-  };
-
-  const decryptMessage = (encryptedMessage, nonce, recipientPublicKey) => {
-    try {
-      const encryptedMessageUint8 = naclUtil.decodeBase64(encryptedMessage);
-      const nonceUint8 = naclUtil.decodeBase64(nonce);
-      const recipientPublicKeyUint8 = bs58.decode(recipientPublicKey);
-
-      const decrypted = nacl.box.open(encryptedMessageUint8, nonceUint8, recipientPublicKeyUint8, publicKey);
-      if (!decrypted) {
-        throw new Error("Fallo al descifrar el mensaje.");
-      }
-
-      const decryptedText = naclUtil.encodeUTF8(decrypted);
-      setDecryptedMessage(decryptedText);
-    } catch (error) {
-      console.error("Error descifrando el mensaje:", error);
-    }
-  };
+  
 
   return (
     <WalletContext.Provider
@@ -148,14 +138,9 @@ const WalletProvider = ({ children }) => {
         publicKey,
         connectWallet,
         disconnectWallet,
-        encryptMessage,
-        decryptMessage,
         isAndroid,
         isIOS,
         phantomInstalled,
-        encryptedMessage,
-        nonce,
-        decryptedMessage,
       }}
     >
       {children}
