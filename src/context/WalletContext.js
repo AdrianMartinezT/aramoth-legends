@@ -12,10 +12,12 @@ const WalletProvider = ({ children }) => {
   const [isAndroid, setIsAndroid] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [phantomInstalled, setPhantomInstalled] = useState(false);
-  const dappKeyPair = useRef(nacl.box.keyPair()); // Generación de par de claves
+
+  const dappKeyPair = useRef(nacl.box.keyPair());
 
   useEffect(() => {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
     if (/android/i.test(userAgent)) {
       setIsAndroid(true);
     } else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
@@ -35,16 +37,16 @@ const WalletProvider = ({ children }) => {
   const checkIfWalletAlreadyConnected = async () => {
     try {
       const { solana } = window;
-      if (solana.isPhantom && localStorage.getItem("walletConnected") === "true") {
+      if (solana.isPhantom && localStorage.getItem('walletConnected') === 'true') {
         const response = await solana.connect({ onlyIfTrusted: true });
         if (response.publicKey) {
           setWalletConnected(true);
           setPublicKey(response.publicKey.toString());
-          toast.success("Tu Wallet sigue conectada 👻");
+          toast.success('Tu Wallet sigue conectada 👻');
         }
       }
     } catch (err) {
-      console.error("Error al verificar la conexión con Phantom", err);
+      console.error('Error al verificar la conexión con Phantom', err);
     }
   };
 
@@ -55,20 +57,23 @@ const WalletProvider = ({ children }) => {
           if (response.publicKey) {
             setWalletConnected(true);
             setPublicKey(response.publicKey.toString());
-            localStorage.setItem("walletConnected", "true");
-            toast.success("Tu Wallet está conectada 👻");
+            localStorage.setItem('walletConnected', 'true');
+            toast.success('Tu Wallet está conectada 👻');
           }
         })
         .catch((err) => {
-          console.error("Error al conectar la wallet Phantom", err);
-          toast.error("Autenticación fallida. No se completó la conexión.");
+          console.error('Error al conectar la wallet Phantom', err);
+          toast.error('Autenticación fallida. No se completó la conexión.');
         });
     } else {
       const appUrl = encodeURIComponent('https://aramoth-legends.vercel.app/');
       const redirectLink = encodeURIComponent(window.location.href);
+
       const dappEncryptionPublicKey = bs58.encode(dappKeyPair.current.publicKey);
+
       const link = `https://phantom.app/ul/v1/connect?app_url=${appUrl}&dapp_encryption_public_key=${dappEncryptionPublicKey}&redirect_link=${redirectLink}&cluster=mainnet-beta`;
-      window.location.href = link;
+
+      window.location.href = link; // Mantén la misma ventana
     }
   };
 
@@ -76,25 +81,33 @@ const WalletProvider = ({ children }) => {
     const handleRedirect = async () => {
       const url = new URL(window.location.href);
       const params = url.searchParams;
+
       if (params.get('phantom_encryption_public_key')) {
         const phantomEncryptionPublicKey = bs58.decode(params.get('phantom_encryption_public_key'));
         const sharedSecret = nacl.box.before(phantomEncryptionPublicKey, dappKeyPair.current.secretKey);
+
         const encryptedData = params.get('data');
         const nonce = bs58.decode(params.get('nonce'));
         const decryptedData = nacl.box.open.after(bs58.decode(encryptedData), nonce, sharedSecret);
+
         if (!decryptedData) {
-          console.error("Error al descifrar los datos");
+          console.error('Error al descifrar los datos');
           return;
         }
+
         const connectionData = JSON.parse(naclUtil.encodeUTF8(decryptedData));
         const { public_key } = connectionData;
+
         setWalletConnected(true);
         setPublicKey(public_key);
-        localStorage.setItem("walletConnected", "true");
-        toast.success("Tu Wallet está conectada 👻");
+        localStorage.setItem('walletConnected', 'true');
+        toast.success('Tu Wallet está conectada 👻');
+
+        // Remover los parámetros de la URL para mantenerla limpia
         window.history.replaceState({}, document.title, url.pathname);
       }
     };
+
     handleRedirect();
   }, []);
 
@@ -104,20 +117,22 @@ const WalletProvider = ({ children }) => {
     }
     setWalletConnected(false);
     setPublicKey(null);
-    localStorage.removeItem("walletConnected");
-    toast.success("Wallet desconectada 👻");
+    localStorage.removeItem('walletConnected');
+    toast.success('Wallet desconectada 👻');
   };
 
   return (
-    <WalletContext.Provider value={{
-      walletConnected,
-      publicKey,
-      connectWallet,
-      disconnectWallet,
-      isAndroid,
-      isIOS,
-      phantomInstalled
-    }}>
+    <WalletContext.Provider
+      value={{
+        walletConnected,
+        publicKey,
+        connectWallet,
+        disconnectWallet,
+        isAndroid,
+        isIOS,
+        phantomInstalled,
+      }}
+    >
       {children}
     </WalletContext.Provider>
   );

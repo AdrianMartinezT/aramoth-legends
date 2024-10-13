@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'; // Para la navegación
 import CustomNavbar from '../components/Navbar';  // Se Importa el componente Navbar
 import { WalletContext } from '../context/WalletContext';  // Se Importa el contexto de la wallet
 import styles from './Gallery.module.css';  // Se Importan los estilos de Gallery
-import playGameButtonImage from '../assets/PlayGame.webp';  // Imagen del botón Play Game
+import playGameButtonImage from '../assets/PlayGame.png';  // Imagen del botón Play Game
 
 // Agrega las imágenes de las cartas de la galería
 import card1 from '../assets/Card01.webp';  // Imagen ejemplo de la carta 1
