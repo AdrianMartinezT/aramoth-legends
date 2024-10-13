@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import icono from '../assets/LogoFinal.png';
+import icono from '../assets/logofinal.webp';
 import playGameImage from '../assets/PlayGame.png';
 import './HeroSection.css';  // Importamos el archivo CSS
 import { useContext } from 'react';

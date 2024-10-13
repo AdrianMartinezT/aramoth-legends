@@ -3,16 +3,16 @@ import { useNavigate } from 'react-router-dom'; // Para la navegación
 import CustomNavbar from '../components/Navbar';  // Se Importa el componente Navbar
 import { WalletContext } from '../context/WalletContext';  // Se Importa el contexto de la wallet
 import styles from './Gallery.module.css';  // Se Importan los estilos de Gallery
-import playGameButtonImage from '../assets/PlayGame.png';  // Imagen del botón Play Game
+import playGameButtonImage from '../assets/PlayGame.webp';  // Imagen del botón Play Game
 
 // Agrega las imágenes de las cartas de la galería
-import card1 from '../assets/Card01.png';  // Imagen ejemplo de la carta 1
-import card2 from '../assets/Card02.png';  // Imagen ejemplo de la carta 2
-import card3 from '../assets/Card03.png';  // Imagen ejemplo de la carta 3
-import card4 from '../assets/Card04.png';  // Imagen ejemplo de la carta 4
-import card5 from '../assets/Card05.png';  // Imagen ejemplo de la carta 5
-import cardBack from '../assets/cardBack.jpg';  // Imagen del dorso de la carta
-import galleryTitleImage from '../assets/gallery.jpg';
+import card1 from '../assets/Card01.webp';  // Imagen ejemplo de la carta 1
+import card2 from '../assets/Card02.webp';  // Imagen ejemplo de la carta 2
+import card3 from '../assets/Card03.webp';  // Imagen ejemplo de la carta 3
+import card4 from '../assets/Card04.webp';  // Imagen ejemplo de la carta 4
+import card5 from '../assets/Card05.webp';  // Imagen ejemplo de la carta 5
+import cardBack from '../assets/cardBack.webp';  // Imagen del dorso de la carta
+import galleryTitleImage from '../assets/gallery.webp';
 
 const Gallery = () => {
   const { walletConnected, connectWallet } = useContext(WalletContext);  // Accedemos al estado de la wallet

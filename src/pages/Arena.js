@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import CustomNavbar from '../components/Navbar';  // Importa el componente Navbar
 import { WalletContext } from '../context/WalletContext';  // Importa el contexto de la wallet
 import styles from './Arena.module.css';  // Importamos los estilos de la página Arena
-import playGameButtonImage from '../assets/PlayGame.png';  // Imagen de Play Game
+import playGameButtonImage from '../assets/PlayGame.webp';  // Imagen de Play Game
 
 const Arena = () => {
   const { walletConnected, connectWallet } = useContext(WalletContext);  // Accedemos al estado de la wallet

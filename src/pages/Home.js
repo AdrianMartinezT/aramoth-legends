@@ -40,7 +40,7 @@ const Home = () => {
     <div 
       className="App"
       style={{
-        backgroundImage: `url('/public/img/Fondo01.png'), radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0.7) 300px)`,
+        backgroundImage: `url('/public/img/Fondo01.webp'), radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0.7) 300px)`,
         backgroundSize: 'cover',
         backgroundBlendMode: 'multiply',
         height: '100vh'

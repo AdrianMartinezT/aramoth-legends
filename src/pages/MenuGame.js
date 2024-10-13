@@ -5,9 +5,9 @@ import { WalletContext } from '../context/WalletContext';  // Se Importa el cont
 import styles from '../pages/MenuGame.module.css';  // Se Importan los estilos
 import play1v1Button from '../assets/play-1v1-button.png';
 import campaingButton from '../assets/campaing-button.png';
-import arenaButton from '../assets/arena-button.png';
-import challengersButton from '../assets/challengers-button.png';
-import playGameButtonImage from '../assets/PlayGame.png';  // Imagen de Play Game
+import arenaButton from '../assets/arena-button.webp';
+import challengersButton from '../assets/challengers-button.webp';
+import playGameButtonImage from '../assets/PlayGame.webp';  // Imagen de Play Game
 
 const MenuGame = () => {
   const { walletConnected, connectWallet } = useContext(WalletContext);  //Se Accede al estado de la wallet

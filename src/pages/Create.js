@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';  // Importa useNavigate para red
 import CustomNavbar from '../components/Navbar';  // Se Importa el componente Navbar
 import { WalletContext } from '../context/WalletContext';  // Se Importa el contexto de la wallet
 import styles from './Create.module.css';  // Se Importan los estilos
-import continueButtonImage from '../assets/ContinueButton.png';  // Imagen del botón Continue
+import continueButtonImage from '../assets/ContinueButton.webp';  // Imagen del botón Continue
 import playGameButtonImage from '../assets/PlayGame.png';  // Imagen del botón Play Game
 
 const Create = () => {

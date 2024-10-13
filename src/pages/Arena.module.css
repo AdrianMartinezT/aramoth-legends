@@ -1,6 +1,6 @@
 /* Fondo y diseño general de la página Arena */
 .arenaPage {
-    background: url('../assets/arena.png') no-repeat center top;  /* Fondo centrado y ajustado desde la parte superior */
+    background: url('../assets/arena.webp') no-repeat center top;  /* Fondo centrado y ajustado desde la parte superior */
     background-size: 80% auto;  /* Asegura que el ancho ocupe el 100% y ajuste la altura proporcionalmente */
     min-height: 100vh;
     display: flex;

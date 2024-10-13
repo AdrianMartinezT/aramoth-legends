@@ -3,7 +3,7 @@
 
 .storyPage {
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 0.8) 100%), 
-                url('../assets/Fondo04.png') no-repeat center center; /* Gradiente sobre la imagen de fondo */
+                url('../assets/Fondo04.webp') no-repeat center center; /* Gradiente sobre la imagen de fondo */
     background-size: cover;
     min-height: 100vh;
     display: flex;

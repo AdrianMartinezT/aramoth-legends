@@ -1,6 +1,6 @@
 /* Fondo y diseño general de la página MenuGame */
 .menuGame {
-  background: url('../assets/menu-background.jpg') no-repeat center center;
+  background: url('../assets/menu-background.webp') no-repeat center center;
   background-size: cover;
   height: 100vh;
   display: flex;
